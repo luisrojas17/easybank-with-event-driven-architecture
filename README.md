@@ -2,6 +2,12 @@
 
 This application exposes an API with basic bank's functionality over Event-Driven Architecture. 
 
+Also, all of these microservices used H2 Database which creating the database in user directory since the database is based on file. On the other hand, to explore the content's database you could access by next URL:
+
+    http://{HOST}:{PORT}/h2-console/
+    
+Where HOST represents the host where each Microservice is running and PORT represents the port where each Microservice is listening.
+
 To start the application from command line you can use next commands:
 
 Using Java jar command:
