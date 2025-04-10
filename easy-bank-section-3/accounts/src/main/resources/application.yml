@@ -38,9 +38,15 @@ management:
 info:
   app:
     name: "accounts"
-    description: "Eazy Bank Accounts Application"
+    description: "Easy Bank Accounts Application"
     version: "1.0.0"
 
 logging:
   pattern:
     console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"
+
+# 8024 is the default port for HTTP access to the server dashboard.
+# 8124 is the port for communication protocol between the server and the AxonServer.
+axon:
+  axonserver:
+    servers: localhost:8124

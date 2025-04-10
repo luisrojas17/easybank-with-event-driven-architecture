@@ -77,6 +77,10 @@ Once the container is running, you can verify the Axon Server by visiting [http:
 
 This setup allows you to run Axon Server locally while ensuring that all important data (like events and configurations) persist even if the container is stopped or removed. Each volume maps specific local directories to the container, ensuring that Axon Server has access to the necessary configuration, data, and events on your system.
 
+
+## Axon Server Dashboard
+aggregateIdentifier=""
+
 ## Database used it
 Also, all of these microservices used H2 Database which creating the database in user directory since the database is based on file. On the other hand, to explore the content's database you could access by next URL:
 
