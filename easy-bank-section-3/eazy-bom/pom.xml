@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.eazybytes</groupId>
+
+    <groupId>com.easybank</groupId>
     <artifactId>eazy-bom</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>eazy-bom</name>
-    <description>Common BOM for easybank microservices</description>
+    <description>Common BOM for Easy Bank Microservices</description>
     <packaging>pom</packaging>
 
     <licenses>
@@ -15,15 +17,18 @@
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <name>Jose Luis Rojas Gomez</name>
             <email>amarillo17cyl@gmail.com</email>
         </developer>
     </developers>
+
     <scm>
         <url>https://github.com/luisrojas17/easybank-with-event-driven-architecture</url>
     </scm>
+
     <properties>
         <common-lib.version>1.0.0</common-lib.version>
         <spring-boot.version>3.3.4</spring-boot.version>
@@ -35,9 +40,11 @@
         <lombok.version>1.18.34</lombok.version>
         <axon.version>4.10.1</axon.version>
     </properties>
+
     <modules>
         <module>common</module>
     </modules>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

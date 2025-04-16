@@ -1,22 +1,22 @@
 package com.easybank.accounts.mapper;
 
-import com.easybank.accounts.dto.AccountsDto;
-import com.easybank.accounts.entity.Accounts;
+import com.easybank.accounts.dto.AccountDto;
+import com.easybank.accounts.entity.AccountEntity;
 
 public class AccountsMapper {
 
-    public static AccountsDto mapToAccountsDto(Accounts accounts, AccountsDto accountsDto) {
-        accountsDto.setAccountNumber(accounts.getAccountNumber());
-        accountsDto.setMobileNumber(accounts.getMobileNumber());
-        accountsDto.setAccountType(accounts.getAccountType());
-        accountsDto.setBranchAddress(accounts.getBranchAddress());
-        accountsDto.setActiveSw(accounts.isActiveSw());
-        return accountsDto;
+    public static AccountDto mapToAccountsDto(AccountEntity accounts, AccountDto accountDto) {
+        accountDto.setAccountNumber(accounts.getAccountNumber());
+        accountDto.setMobileNumber(accounts.getMobileNumber());
+        accountDto.setAccountType(accounts.getAccountType());
+        accountDto.setBranchAddress(accounts.getBranchAddress());
+        accountDto.setActiveSw(accounts.isActiveSw());
+        return accountDto;
     }
 
-    public static Accounts mapToAccounts(AccountsDto accountsDto, Accounts accounts) {
-        accounts.setAccountType(accountsDto.getAccountType());
-        accounts.setBranchAddress(accountsDto.getBranchAddress());
+    public static AccountEntity mapToAccounts(AccountDto accountDto, AccountEntity accounts) {
+        accounts.setAccountType(accountDto.getAccountType());
+        accounts.setBranchAddress(accountDto.getBranchAddress());
         return accounts;
     }
 

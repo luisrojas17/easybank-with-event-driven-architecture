@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>com.eazybytes</groupId>
+        <groupId>com.easybank</groupId>
         <artifactId>eazy-bom</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
-    <groupId>com.eazybytes</groupId>
+
+    <groupId>com.easybank</groupId>
     <artifactId>common</artifactId>
     <version>${common-lib.version}</version>
     <name>common</name>
-    <description>Common Project for eazybank microservices</description>
+    <description>Common Project for Easy Bank Microservices</description>
     <url/>
+
     <licenses>
         <license/>
     </licenses>
+
     <developers>
         <developer/>
     </developers>
+
     <scm>
         <connection/>
         <developerConnection/>

@@ -58,7 +58,7 @@ public class CustomerCommandController {
 
         commandGateway.sendAndWait(updateCustomerCommand);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED.OK)
                 .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
     }
 

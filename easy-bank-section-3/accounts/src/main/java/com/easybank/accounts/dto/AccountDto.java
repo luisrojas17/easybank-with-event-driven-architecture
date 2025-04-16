@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class AccountsDto {
+public class AccountDto {
 
     private Long accountNumber;
 

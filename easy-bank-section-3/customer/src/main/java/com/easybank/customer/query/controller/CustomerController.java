@@ -24,7 +24,7 @@ public class CustomerController {
     private final QueryGateway queryGateway;
 
     @GetMapping("/fetch")
-    public ResponseEntity<CustomerDto> fetchCustomerDetails(
+    public ResponseEntity<CustomerDto> fetch(
             @RequestParam("mobileNumber")
             @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                     String mobileNumber) {
