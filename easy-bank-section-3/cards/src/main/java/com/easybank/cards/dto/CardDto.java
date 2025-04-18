@@ -7,7 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Data
-public class CardsDto {
+public class CardDto {
 
     private Long cardNumber;
 

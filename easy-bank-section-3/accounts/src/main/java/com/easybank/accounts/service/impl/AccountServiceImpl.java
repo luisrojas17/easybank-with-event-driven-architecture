@@ -28,8 +28,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void create(AccountDto accountDto) {
         String mobileNumber = accountDto.getMobileNumber();
-        Optional<AccountEntity> optionalAccounts= accountRepository.findByMobileNumberAndActiveSw(mobileNumber,
-                AccountsConstants.ACTIVE_SW);
+
+        Optional<AccountEntity> optionalAccounts =
+                accountRepository.findByMobileNumberAndActiveSw(mobileNumber,
+                    AccountsConstants.ACTIVE_SW);
+
         if(optionalAccounts.isPresent()){
             throw new AccountAlreadyExistsException("Account already registered with given mobileNumber "+mobileNumber);
         }
@@ -46,12 +49,15 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public AccountDto fetch(String mobileNumber) {
-        AccountEntity accountEntity = accountRepository.findByMobileNumberAndActiveSw(mobileNumber, AccountsConstants.ACTIVE_SW)
-                .orElseThrow(() -> new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
+        AccountEntity accountEntity = accountRepository.findByMobileNumberAndActiveSw(
+                mobileNumber, AccountsConstants.ACTIVE_SW)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
         );
         AccountDto accountDto = AccountsMapper.mapToAccountsDto(accountEntity, new AccountDto());
 
-        log.info("Account details for mobileNumber {} is {}", mobileNumber, accountDto);
+        log.info("Account details for mobileNumber [{}] is [{}].",
+                mobileNumber, accountDto);
 
         return accountDto;
     }
@@ -63,9 +69,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean update(AccountDto accountDto) {
 
-        AccountEntity accountEntity = accountRepository.findByMobileNumberAndActiveSw(accountDto.getMobileNumber(),
-                AccountsConstants.ACTIVE_SW).orElseThrow(() -> new ResourceNotFoundException("Account", "mobileNumber",
-                accountDto.getMobileNumber()));
+        AccountEntity accountEntity = accountRepository.findByMobileNumberAndActiveSw(
+                accountDto.getMobileNumber(), AccountsConstants.ACTIVE_SW)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Account", "mobileNumber",
+                                accountDto.getMobileNumber()));
 
         AccountsMapper.mapToAccounts(accountDto, accountEntity);
         accountRepository.save(accountEntity);
@@ -79,11 +87,14 @@ public class AccountServiceImpl implements AccountService {
      */
     @Override
     public boolean delete(Long accountNumber) {
-        AccountEntity accountEntity = accountRepository.findById(accountNumber).orElseThrow(
-                () -> new ResourceNotFoundException("Account", "accountNumber", accountNumber.toString())
-        );
+        AccountEntity accountEntity = accountRepository.findById(accountNumber)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Account", "accountNumber",
+                                accountNumber.toString()));
+
         accountEntity.setActiveSw(AccountsConstants.IN_ACTIVE_SW);
         accountRepository.save(accountEntity);
+
         return true;
     }
 

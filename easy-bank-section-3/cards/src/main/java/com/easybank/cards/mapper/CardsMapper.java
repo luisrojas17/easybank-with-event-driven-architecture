@@ -1,26 +1,26 @@
 package com.easybank.cards.mapper;
 
-import com.easybank.cards.dto.CardsDto;
-import com.easybank.cards.entity.Cards;
+import com.easybank.cards.dto.CardDto;
+import com.easybank.cards.entity.CardEntity;
 
 public class CardsMapper {
 
-    public static CardsDto mapToCardsDto(Cards cards, CardsDto cardsDto) {
-        cardsDto.setCardNumber(cards.getCardNumber());
-        cardsDto.setCardType(cards.getCardType());
-        cardsDto.setMobileNumber(cards.getMobileNumber());
-        cardsDto.setTotalLimit(cards.getTotalLimit());
-        cardsDto.setAvailableAmount(cards.getAvailableAmount());
-        cardsDto.setAmountUsed(cards.getAmountUsed());
-        cardsDto.setActiveSw(cards.isActiveSw());
-        return cardsDto;
+    public static CardDto mapToCardsDto(CardEntity cards, CardDto cardDto) {
+        cardDto.setCardNumber(cards.getCardNumber());
+        cardDto.setCardType(cards.getCardType());
+        cardDto.setMobileNumber(cards.getMobileNumber());
+        cardDto.setTotalLimit(cards.getTotalLimit());
+        cardDto.setAvailableAmount(cards.getAvailableAmount());
+        cardDto.setAmountUsed(cards.getAmountUsed());
+        cardDto.setActiveSw(cards.isActiveSw());
+        return cardDto;
     }
 
-    public static Cards mapToCards(CardsDto cardsDto, Cards cards) {
-        cards.setCardType(cardsDto.getCardType());
-        cards.setTotalLimit(cardsDto.getTotalLimit());
-        cards.setAvailableAmount(cardsDto.getAvailableAmount());
-        cards.setAmountUsed(cardsDto.getAmountUsed());
+    public static CardEntity mapToCards(CardDto cardDto, CardEntity cards) {
+        cards.setCardType(cardDto.getCardType());
+        cards.setTotalLimit(cardDto.getTotalLimit());
+        cards.setAvailableAmount(cardDto.getAvailableAmount());
+        cards.setAmountUsed(cardDto.getAmountUsed());
         return cards;
     }
 

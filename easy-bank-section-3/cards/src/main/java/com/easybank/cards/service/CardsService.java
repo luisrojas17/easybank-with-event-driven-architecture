@@ -1,34 +1,34 @@
 package com.easybank.cards.service;
 
-import com.easybank.cards.dto.CardsDto;
+import com.easybank.cards.dto.CardDto;
 
-public interface ICardsService {
+public interface CardsService {
 
     /**
      *
-     * @param mobileNumber - Mobile Number of the Customer
+     * @param cardDto - CardsDto Object
      */
-    void createCard(String mobileNumber);
+    void create(CardDto cardDto);
 
     /**
      *
      * @param mobileNumber - Input mobile Number
      *  @return Card Details based on a given mobileNumber
      */
-    CardsDto fetchCard(String mobileNumber);
+    CardDto fetch(String mobileNumber);
 
     /**
      *
-     * @param cardsDto - CardsDto Object
+     * @param cardDto - CardsDto Object
      * @return boolean indicating if the update of card details is successful or not
      */
-    boolean updateCard(CardsDto cardsDto);
+    boolean update(CardDto cardDto);
 
     /**
      *
      * @param cardNumber - Input Card Number
      * @return boolean indicating if the delete of card details is successful or not
      */
-    boolean deleteCard(Long cardNumber);
+    boolean delete(Long cardNumber);
 
 }
