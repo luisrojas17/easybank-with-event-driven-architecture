@@ -1,26 +1,26 @@
 package com.easybank.loans.mapper;
 
-import com.easybank.loans.dto.LoansDto;
-import com.easybank.loans.entity.Loans;
+import com.easybank.loans.dto.LoanDto;
+import com.easybank.loans.entity.LoanEntity;
 
 public class LoansMapper {
 
-    public static LoansDto mapToLoansDto(Loans loans, LoansDto loansDto) {
-        loansDto.setLoanNumber(loans.getLoanNumber());
-        loansDto.setLoanType(loans.getLoanType());
-        loansDto.setMobileNumber(loans.getMobileNumber());
-        loansDto.setTotalLoan(loans.getTotalLoan());
-        loansDto.setAmountPaid(loans.getAmountPaid());
-        loansDto.setOutstandingAmount(loans.getOutstandingAmount());
-        loansDto.setActiveSw(loans.isActiveSw());
-        return loansDto;
+    public static LoanDto mapToDto(LoanEntity loans, LoanDto loanDto) {
+        loanDto.setLoanNumber(loans.getLoanNumber());
+        loanDto.setLoanType(loans.getLoanType());
+        loanDto.setMobileNumber(loans.getMobileNumber());
+        loanDto.setTotalLoan(loans.getTotalLoan());
+        loanDto.setAmountPaid(loans.getAmountPaid());
+        loanDto.setOutstandingAmount(loans.getOutstandingAmount());
+        loanDto.setActiveSw(loans.isActiveSw());
+        return loanDto;
     }
 
-    public static Loans mapToLoans(LoansDto loansDto, Loans loans) {
-        loans.setLoanType(loansDto.getLoanType());
-        loans.setTotalLoan(loansDto.getTotalLoan());
-        loans.setAmountPaid(loansDto.getAmountPaid());
-        loans.setOutstandingAmount(loansDto.getOutstandingAmount());
+    public static LoanEntity mapToEntity(LoanDto loanDto, LoanEntity loans) {
+        loans.setLoanType(loanDto.getLoanType());
+        loans.setTotalLoan(loanDto.getTotalLoan());
+        loans.setAmountPaid(loanDto.getAmountPaid());
+        loans.setOutstandingAmount(loanDto.getOutstandingAmount());
         return loans;
     }
 

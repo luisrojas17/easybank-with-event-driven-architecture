@@ -48,5 +48,9 @@ logging:
 # 8024 is the default port for HTTP access to the server dashboard.
 # 8124 is the port for communication protocol between the server and the AxonServer.
 axon:
+  eventhandling:
+    processors:
+      loan-group:
+        mode: subscribing
   axonserver:
     servers: localhost:8124

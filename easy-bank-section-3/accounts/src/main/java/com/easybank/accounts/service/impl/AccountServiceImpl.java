@@ -30,11 +30,11 @@ public class AccountServiceImpl implements AccountService {
         String mobileNumber = accountDto.getMobileNumber();
 
         Optional<AccountEntity> optionalAccounts =
-                accountRepository.findByMobileNumberAndActiveSw(mobileNumber,
-                    AccountsConstants.ACTIVE_SW);
+                accountRepository.findByMobileNumberAndActiveSw(
+                        mobileNumber, AccountsConstants.ACTIVE_SW);
 
         if(optionalAccounts.isPresent()){
-            throw new AccountAlreadyExistsException("Account already registered with given mobileNumber "+mobileNumber);
+            throw new AccountAlreadyExistsException("Account already registered with given mobileNumber " + mobileNumber);
         }
 
         AccountEntity newAccountEntity = new AccountEntity();
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
         );
-        AccountDto accountDto = AccountsMapper.mapToAccountsDto(accountEntity, new AccountDto());
+        AccountDto accountDto = AccountsMapper.mapToDto(accountEntity, new AccountDto());
 
         log.info("Account details for mobileNumber [{}] is [{}].",
                 mobileNumber, accountDto);
@@ -75,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
                         new ResourceNotFoundException("Account", "mobileNumber",
                                 accountDto.getMobileNumber()));
 
-        AccountsMapper.mapToAccounts(accountDto, accountEntity);
+        AccountsMapper.mapToEntity(accountDto, accountEntity);
         accountRepository.save(accountEntity);
 
         return true;

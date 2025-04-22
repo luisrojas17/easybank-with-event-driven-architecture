@@ -1,8 +1,8 @@
 package com.easybank.loans.constants;
 
-public final class LoansConstants {
+public final class LoanConstants {
 
-    private LoansConstants() {
+    private LoanConstants() {
         // restrict instantiation
     }
 

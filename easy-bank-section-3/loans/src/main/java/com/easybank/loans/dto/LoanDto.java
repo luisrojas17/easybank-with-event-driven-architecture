@@ -7,7 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Data
-public class LoansDto {
+public class LoanDto {
 
     private Long loanNumber;
 
