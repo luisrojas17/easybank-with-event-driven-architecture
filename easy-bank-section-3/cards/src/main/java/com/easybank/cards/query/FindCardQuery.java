@@ -1,10 +1,9 @@
 package com.easybank.cards.query;
 
-import lombok.Getter;
+import lombok.Value;
 
-public record FindCardQuery (String mobileNumber) {
+@Value
+public class FindCardQuery {
 
-    public String getMobileNumber() {
-        return mobileNumber;
-    }
+    String mobileNumber;
 }
