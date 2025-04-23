@@ -1,5 +1,6 @@
 package com.easybank.customer.service.impl;
 
+import com.easybank.common.event.CustomerDataChangedEvent;
 import com.easybank.customer.command.event.CustomerCreatedEvent;
 import com.easybank.customer.command.event.CustomerUpdatedEvent;
 import com.easybank.customer.constants.CustomerConstants;
@@ -10,8 +11,8 @@ import com.easybank.customer.exception.ResourceNotFoundException;
 import com.easybank.customer.mapper.CustomerMapper;
 import com.easybank.customer.repository.CustomerRepository;
 import com.easybank.customer.service.CustomerService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+
+    private final EventGateway eventGateway;
 
     @Override
     public void create(CustomerCreatedEvent customerCreatedEvent) {
@@ -46,8 +49,9 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerEntity customer = customerRepository.findByMobileNumberAndActiveSw(mobileNumber, true).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
-        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
-        return customerDto;
+
+        return CustomerMapper.mapToDto(customer, new CustomerDto());
+
     }
 
     @Override
@@ -66,11 +70,23 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public boolean delete(String customerId) {
-        CustomerEntity customer = customerRepository.findById(customerId).orElseThrow(
+        CustomerEntity customerEntity = customerRepository.findById(customerId).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "customerId", customerId)
         );
-        customer.setActiveSw(CustomerConstants.IN_ACTIVE_SW);
-        customerRepository.save(customer);
+        customerEntity.setActiveSw(CustomerConstants.IN_ACTIVE_SW);
+        customerRepository.save(customerEntity);
+
+        // To publish the data changed event when customer is deleted (logically)
+        // and the changes can be shown their by profile microservice.
+        CustomerDataChangedEvent customerDataChangedEvent =
+                CustomerDataChangedEvent.builder()
+                        .name(customerEntity.getName())
+                        .mobileNumber(customerEntity.getMobileNumber())
+                        .activeSw(CustomerConstants.IN_ACTIVE_SW)
+                        .build();
+
+        eventGateway.publish(customerDataChangedEvent);
+
         return true;
     }
 

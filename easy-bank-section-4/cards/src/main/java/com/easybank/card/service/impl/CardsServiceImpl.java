@@ -8,8 +8,10 @@ import com.easybank.card.exception.ResourceNotFoundException;
 import com.easybank.card.mapper.CardsMapper;
 import com.easybank.card.repository.CardsRepository;
 import com.easybank.card.service.CardsService;
+import com.easybank.common.event.CardDataChangedEvent;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class CardsServiceImpl implements CardsService {
 
     private CardsRepository cardsRepository;
+
+    private EventGateway eventGateway;
 
     /**
      * @param cardDto - CardsDto Object to create
@@ -55,7 +59,7 @@ public class CardsServiceImpl implements CardsService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Card", "mobileNumber", mobileNumber));
 
-        CardDto cardDto = CardsMapper.mapToCardsDto(card, new CardDto());
+        CardDto cardDto = CardsMapper.mapToDto(card, new CardDto());
 
         log.info("Card details for mobileNumber [{}] is [{}].",
                 mobileNumber, cardDto);
@@ -75,7 +79,7 @@ public class CardsServiceImpl implements CardsService {
                         new ResourceNotFoundException("Card", "CardNumber",
                                 cardDto.getCardNumber().toString()));
 
-        CardsMapper.mapToCards(cardDto, cardEntity);
+        CardsMapper.mapToEntity(cardDto, cardEntity);
         cardsRepository.save(cardEntity);
 
         return true;
@@ -87,13 +91,23 @@ public class CardsServiceImpl implements CardsService {
      */
     @Override
     public boolean delete(Long cardNumber) {
-        CardEntity card = cardsRepository.findById(cardNumber)
+        CardEntity cardentity = cardsRepository.findById(cardNumber)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Card", "cardNumber",
                                 cardNumber.toString()));
 
-        card.setActiveSw(CardsConstants.IN_ACTIVE_SW);
-        cardsRepository.save(card);
+        cardentity.setActiveSw(CardsConstants.IN_ACTIVE_SW);
+        cardsRepository.save(cardentity);
+
+        // To publish the data changed event when customer is deleted (logically)
+        // and the changes can be shown their by profile microservice.
+        CardDataChangedEvent cardDataChangedEvent =
+                CardDataChangedEvent.builder()
+                        .mobileNumber(cardentity.getMobileNumber())
+                        .cardNumber(cardentity.getCardNumber())
+                        .build();
+
+        eventGateway.publish(cardDataChangedEvent);
 
         return true;
     }

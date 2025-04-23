@@ -1,5 +1,6 @@
 package com.easybank.loan.command.aggregate;
 
+import com.easybank.common.event.LoanDataChangedEvent;
 import com.easybank.loan.command.CreateLoanCommand;
 import com.easybank.loan.command.DeleteLoanCommand;
 import com.easybank.loan.command.UpdateLoanCommand;
@@ -34,7 +35,16 @@ public class LoanAggregate {
     public LoanAggregate(CreateLoanCommand createLoanCommand) {
         LoanCreatedEvent loanCreatedEvent = new LoanCreatedEvent();
         BeanUtils.copyProperties(createLoanCommand, loanCreatedEvent);
-        AggregateLifecycle.apply(loanCreatedEvent);
+
+        // Materialized View Pattern
+        LoanDataChangedEvent loanDataChangedEvent =
+                LoanDataChangedEvent.builder().build();
+        BeanUtils.copyProperties(createLoanCommand, loanDataChangedEvent);
+
+        // To publish multiple events
+        AggregateLifecycle.apply(loanCreatedEvent).andThen(
+                () -> AggregateLifecycle.apply(loanDataChangedEvent)
+        );
     }
 
     @EventSourcingHandler
@@ -54,6 +64,12 @@ public class LoanAggregate {
         LoanUpdatedEvent loanUpdatedEvent = new LoanUpdatedEvent();
         BeanUtils.copyProperties(updateLoanCommand, loanUpdatedEvent);
         AggregateLifecycle.apply(loanUpdatedEvent);
+
+        // Materialized View Pattern
+        LoanDataChangedEvent loanDataChangedEvent =
+                LoanDataChangedEvent.builder().build();
+        BeanUtils.copyProperties(updateLoanCommand, loanDataChangedEvent);
+        AggregateLifecycle.apply(loanDataChangedEvent);
     }
 
     @EventSourcingHandler

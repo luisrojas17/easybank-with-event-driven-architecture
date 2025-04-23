@@ -5,7 +5,7 @@ import com.easybank.customer.entity.CustomerEntity;
 
 public class CustomerMapper {
 
-    public static CustomerDto mapToCustomerDto(CustomerEntity customer, CustomerDto customerDto) {
+    public static CustomerDto mapToDto(CustomerEntity customer, CustomerDto customerDto) {
         customerDto.setCustomerId(customer.getCustomerId());
         customerDto.setName(customer.getName());
         customerDto.setEmail(customer.getEmail());

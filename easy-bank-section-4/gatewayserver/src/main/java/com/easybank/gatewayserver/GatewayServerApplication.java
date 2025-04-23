@@ -16,7 +16,7 @@ public class GatewayServerApplication {
     }
 
     @Bean
-    public RouteLocator eazyBankRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
+    public RouteLocator easyBankRouteConfig(RouteLocatorBuilder routeLocatorBuilder) {
         return routeLocatorBuilder.routes()
                 .route(p -> p
                         .path("/eazybank/customer/**")
@@ -37,7 +37,13 @@ public class GatewayServerApplication {
                         .path("/eazybank/cards/**")
                         .filters(f -> f.rewritePath("/eazybank/cards/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
-                        .uri("lb://CARDS")).build();
+                        .uri("lb://CARDS"))
+                .route(p -> p
+                        .path("/eazybank/profile/**")
+                        .filters(f -> f.rewritePath("/eazybank/profile/(?<segment>.*)", "/${segment}")
+                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
+                        .uri("lb://PROFILE"))
+                .build();
 
 
     }

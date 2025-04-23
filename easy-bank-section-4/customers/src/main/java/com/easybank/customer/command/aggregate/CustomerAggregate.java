@@ -1,5 +1,6 @@
 package com.easybank.customer.command.aggregate;
 
+import com.easybank.common.event.CustomerDataChangedEvent;
 import com.easybank.customer.command.CreateCustomerCommand;
 import com.easybank.customer.command.DeleteCustomerCommand;
 import com.easybank.customer.command.UpdateCustomerCommand;
@@ -10,13 +11,10 @@ import com.easybank.customer.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
-import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
-
-import java.util.Optional;
 
 /**
  * This class is the aggregate class for customer. The aggregate encapsulates the state and behavior.
@@ -48,8 +46,17 @@ public class CustomerAggregate {
         // To copy all data properties
         BeanUtils.copyProperties(createCustomerCommand, customerCreatedEvent);
 
-        // To publish the event
-        AggregateLifecycle.apply(customerCreatedEvent);
+        // Materialized View Pattern.
+        // To publish data changed and the changes can be shown their by profile microservice
+        CustomerDataChangedEvent customerDataChangedEvent =
+                CustomerDataChangedEvent.builder().build();
+
+        BeanUtils.copyProperties(createCustomerCommand, customerDataChangedEvent);
+
+        // To publish multiple events
+        AggregateLifecycle.apply(customerCreatedEvent).andThen(
+                () -> AggregateLifecycle.apply(customerDataChangedEvent)
+        );
 
         log.info("CreateCustomerCommand processed successfully.");
 
@@ -87,6 +94,15 @@ public class CustomerAggregate {
         // To publish the event
         AggregateLifecycle.apply(customerUpdatedEvent);
 
+        // Materialized View Pattern.
+        // To publish data changed and the changes can be shown their by profile microservice
+        CustomerDataChangedEvent customerDataChangedEvent =
+                CustomerDataChangedEvent.builder().build();
+
+        BeanUtils.copyProperties(updateCustomerCommand, customerDataChangedEvent);
+
+        AggregateLifecycle.apply(customerDataChangedEvent);
+
         log.info("UpdateCustomerCommand processed successfully.");
     }
 
@@ -109,6 +125,10 @@ public class CustomerAggregate {
 
         // To publish the event
         AggregateLifecycle.apply(customerDeletedEvent);
+
+        // Materialized View Pattern.
+        // To publish data changed and the changes can be shown their by profile microservice
+        // Go to CustomerService::delete
 
         log.info("DeleteCustomerCommand processed successfully.");
     }

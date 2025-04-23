@@ -6,6 +6,7 @@ import com.easybank.card.command.UpdateCardCommand;
 import com.easybank.card.command.event.CardCreatedEvent;
 import com.easybank.card.command.event.CardDeletedEvent;
 import com.easybank.card.command.event.CardUpdatedEvent;
+import com.easybank.common.event.CardDataChangedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -31,7 +32,16 @@ public class CardAggregate {
     public CardAggregate(CreateCardCommand createCommand) {
         CardCreatedEvent cardCreatedEvent = new CardCreatedEvent();
         BeanUtils.copyProperties(createCommand, cardCreatedEvent);
-        AggregateLifecycle.apply(cardCreatedEvent);
+
+        // Materialized View Pattern
+        CardDataChangedEvent cardDataChangedEvent =
+                CardDataChangedEvent.builder().build();
+        BeanUtils.copyProperties(createCommand, cardDataChangedEvent);
+
+        // To publish multiple events
+        AggregateLifecycle.apply(cardCreatedEvent).andThen(
+                () -> AggregateLifecycle.apply(cardDataChangedEvent)
+        );
     }
 
     @EventSourcingHandler
@@ -50,6 +60,12 @@ public class CardAggregate {
         CardUpdatedEvent cardUpdatedEvent = new CardUpdatedEvent();
         BeanUtils.copyProperties(updateCommand, cardUpdatedEvent);
         AggregateLifecycle.apply(cardUpdatedEvent);
+
+        // Materialized View Pattern
+        CardDataChangedEvent cardDataChangedEvent =
+                CardDataChangedEvent.builder().build();
+        BeanUtils.copyProperties(updateCommand, cardDataChangedEvent);
+        AggregateLifecycle.apply(cardDataChangedEvent);
     }
 
     @EventSourcingHandler

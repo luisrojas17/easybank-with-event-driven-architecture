@@ -8,8 +8,10 @@ import com.easybank.account.exception.ResourceNotFoundException;
 import com.easybank.account.mapper.AccountsMapper;
 import com.easybank.account.repository.AccountRepository;
 import com.easybank.account.service.AccountService;
-import lombok.AllArgsConstructor;
+import com.easybank.common.event.AccountDataChangedEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,12 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+
+    private final EventGateway eventGateway;
 
     /**
      * @param accountDto - AccountDto Object to create
@@ -94,6 +98,16 @@ public class AccountServiceImpl implements AccountService {
 
         accountEntity.setActiveSw(AccountsConstants.IN_ACTIVE_SW);
         accountRepository.save(accountEntity);
+
+        // To publish the data changed event when customer is deleted (logically)
+        // and the changes can be shown their by profile microservice.
+        AccountDataChangedEvent accountDataChangedEvent =
+                AccountDataChangedEvent.builder()
+                        .mobileNumber(accountEntity.getMobileNumber())
+                        .accountNumber(accountEntity.getAccountNumber())
+                        .build();
+
+        eventGateway.publish(accountDataChangedEvent);
 
         return true;
     }

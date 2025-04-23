@@ -5,7 +5,7 @@ import com.easybank.card.entity.CardEntity;
 
 public class CardsMapper {
 
-    public static CardDto mapToCardsDto(CardEntity cards, CardDto cardDto) {
+    public static CardDto mapToDto(CardEntity cards, CardDto cardDto) {
         cardDto.setCardNumber(cards.getCardNumber());
         cardDto.setCardType(cards.getCardType());
         cardDto.setMobileNumber(cards.getMobileNumber());
@@ -16,7 +16,7 @@ public class CardsMapper {
         return cardDto;
     }
 
-    public static CardEntity mapToCards(CardDto cardDto, CardEntity cards) {
+    public static CardEntity mapToEntity(CardDto cardDto, CardEntity cards) {
         cards.setCardType(cardDto.getCardType());
         cards.setTotalLimit(cardDto.getTotalLimit());
         cards.setAvailableAmount(cardDto.getAvailableAmount());

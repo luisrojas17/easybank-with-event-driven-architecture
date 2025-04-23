@@ -1,13 +1,21 @@
 package com.easybank.profile.service;
 
+import com.easybank.common.event.AccountDataChangedEvent;
+import com.easybank.common.event.CardDataChangedEvent;
+import com.easybank.common.event.CustomerDataChangedEvent;
+import com.easybank.common.event.LoanDataChangedEvent;
 import com.easybank.profile.dto.ProfileDto;
 
 public interface ProfileService {
 
-    /**
-     * @param mobileNumber - Input Mobile Number
-     * @return Profile Details based on a given mobileNumber
-     */
     ProfileDto find(String mobileNumber);
+
+    void handler(AccountDataChangedEvent accountDataChangedEvent);
+
+    void handler(CardDataChangedEvent cardDataChangedEvent);
+
+    void handler(CustomerDataChangedEvent customerDataChangedEvent);
+
+    void handler(LoanDataChangedEvent loanDataChangedEvent);
 
 }

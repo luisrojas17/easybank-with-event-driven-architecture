@@ -1,5 +1,6 @@
 package com.easybank.loan.service.impl;
 
+import com.easybank.common.event.LoanDataChangedEvent;
 import com.easybank.loan.constants.LoanConstants;
 import com.easybank.loan.dto.LoanDto;
 import com.easybank.loan.entity.LoanEntity;
@@ -8,17 +9,20 @@ import com.easybank.loan.exception.ResourceNotFoundException;
 import com.easybank.loan.mapper.LoansMapper;
 import com.easybank.loan.repository.LoanRepository;
 import com.easybank.loan.service.LoanService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.axonframework.eventhandling.gateway.EventGateway;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class LoanServiceImpl implements LoanService {
 
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
+
+    private final EventGateway eventGateway;
 
     @Override
     public void create(LoanDto loanDto) {
@@ -72,6 +76,16 @@ public class LoanServiceImpl implements LoanService {
 
         loanEntity.setActiveSw(LoanConstants.IN_ACTIVE_SW);
         loanRepository.save(loanEntity);
+
+        // To publish the data changed event when customer is deleted (logically)
+        // and the changes can be shown their by profile microservice.
+        LoanDataChangedEvent loanDataChangedEvent =
+                LoanDataChangedEvent.builder()
+                        .mobileNumber(loanEntity.getMobileNumber())
+                        .loanNumber(loanEntity.getLoanNumber())
+                        .build();
+
+        eventGateway.publish(loanDataChangedEvent);
 
         return true;
     }

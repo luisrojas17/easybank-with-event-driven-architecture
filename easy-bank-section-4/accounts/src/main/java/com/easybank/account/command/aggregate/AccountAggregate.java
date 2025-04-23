@@ -6,6 +6,7 @@ import com.easybank.account.command.UpdateAccountCommand;
 import com.easybank.account.command.event.AccountCreatedEvent;
 import com.easybank.account.command.event.AccountDeletedEvent;
 import com.easybank.account.command.event.AccountUpdatedEvent;
+import com.easybank.common.event.AccountDataChangedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -32,7 +33,15 @@ public class AccountAggregate {
         AccountCreatedEvent accountCreatedEvent = new AccountCreatedEvent();
         BeanUtils.copyProperties(createAccountCommand, accountCreatedEvent);
 
-        AggregateLifecycle.apply(accountCreatedEvent);
+        // Materialized View Pattern
+        AccountDataChangedEvent accountDataChangedEvent =
+                AccountDataChangedEvent.builder().build();
+        BeanUtils.copyProperties(createAccountCommand, accountDataChangedEvent);
+
+        // To publish multiple events
+        AggregateLifecycle.apply(accountCreatedEvent).andThen(
+                () -> AggregateLifecycle.apply(accountDataChangedEvent)
+        );
 
     }
 
@@ -53,6 +62,12 @@ public class AccountAggregate {
 
         AggregateLifecycle.apply(accountUpdatedEvent);
 
+        // Materialized View Pattern
+        AccountDataChangedEvent accountDataChangedEvent =
+                AccountDataChangedEvent.builder().build();
+        BeanUtils.copyProperties(updateAccountCommand, accountDataChangedEvent);
+
+        AggregateLifecycle.apply(accountDataChangedEvent);
     }
 
     @EventSourcingHandler
