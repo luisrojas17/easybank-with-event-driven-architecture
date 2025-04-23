@@ -57,7 +57,7 @@ public class CardCommandController {
     }
 
     @PatchMapping("/delete")
-    public ResponseEntity<ResponseDto> delete(@RequestParam Long cardNumber) {
+    public ResponseEntity<ResponseDto> delete(@RequestParam("cardNumber") Long cardNumber) {
         DeleteCardCommand deleteCommand = DeleteCardCommand.builder()
                 .cardNumber(cardNumber).activeSw(CardsConstants.IN_ACTIVE_SW).build();
         commandGateway.sendAndWait(deleteCommand);

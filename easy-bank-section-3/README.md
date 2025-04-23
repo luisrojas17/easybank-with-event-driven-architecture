@@ -73,12 +73,23 @@ axoniq.axonserver.devmode.enabled=true
 
 Now that the configuration is ready, you can start the Axon Server in Docker. Run the following Docker command in your terminal:
 
+For Unix/Linux
 ```bash
 docker run -d --name axonserver \
     -p 8024:8024 -p 8124:8124 \
     -v "/home/luisrojas17/axonserver/data":/axonserver/data \
     -v "/home/luisrojas17/axonserver/events":/axonserver/events \
     -v "/home/luisrojas17/axonserver/config":/axonserver/config \
+    axoniq/axonserver
+```
+
+For Windows
+```bat
+docker run -d --name axonserver \
+    -p 8024:8024 -p 8124:8124 \
+    -v "%USERPROFILE%/axonserver/data":/axonserver/data \
+    -v "%USERPROFILE%/axonserver/events":/axonserver/events \
+    -v "%USERPROFILE%/axonserver/config":/axonserver/config \
     axoniq/axonserver
 ```
 

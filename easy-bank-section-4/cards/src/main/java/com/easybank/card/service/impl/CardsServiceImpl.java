@@ -104,7 +104,7 @@ public class CardsServiceImpl implements CardsService {
         CardDataChangedEvent cardDataChangedEvent =
                 CardDataChangedEvent.builder()
                         .mobileNumber(cardentity.getMobileNumber())
-                        .cardNumber(cardentity.getCardNumber())
+                        .cardNumber(0L)
                         .build();
 
         eventGateway.publish(cardDataChangedEvent);

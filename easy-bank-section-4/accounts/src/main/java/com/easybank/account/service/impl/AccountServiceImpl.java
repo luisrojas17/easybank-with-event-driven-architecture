@@ -104,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
         AccountDataChangedEvent accountDataChangedEvent =
                 AccountDataChangedEvent.builder()
                         .mobileNumber(accountEntity.getMobileNumber())
-                        .accountNumber(accountEntity.getAccountNumber())
+                        .accountNumber(0L)
                         .build();
 
         eventGateway.publish(accountDataChangedEvent);

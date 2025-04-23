@@ -2,9 +2,9 @@ server:
   port: 8080
 spring:
   application:
-    name: "customer"
+    name: "customers"
   datasource:
-    url: "jdbc:h2:file:~/customer;AUTO_SERVER=true"
+    url: "jdbc:h2:file:~/customers;AUTO_SERVER=true"
     driver-class-name: "org.h2.Driver"
     username: sa
     password: ''

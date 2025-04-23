@@ -82,7 +82,7 @@ public class LoanServiceImpl implements LoanService {
         LoanDataChangedEvent loanDataChangedEvent =
                 LoanDataChangedEvent.builder()
                         .mobileNumber(loanEntity.getMobileNumber())
-                        .loanNumber(loanEntity.getLoanNumber())
+                        .loanNumber(0L)
                         .build();
 
         eventGateway.publish(loanDataChangedEvent);

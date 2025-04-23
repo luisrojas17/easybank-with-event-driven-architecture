@@ -12,8 +12,9 @@ import lombok.*;
 public class ProfileEntity extends BaseEntity {
 
     @Id
-    @Column(name = "profile_id", length = 100)
-    private String profileId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "profile_id", nullable = false)
+    private long profileId;
 
     @Column(name = "name", length = 100, nullable = false)
     private String name;
