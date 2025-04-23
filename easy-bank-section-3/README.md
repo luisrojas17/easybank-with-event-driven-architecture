@@ -12,6 +12,7 @@ All of these Microservices are based on:
 
 1. Axon.
     https://www.axoniq.io/
+    https://www.baeldung.com/axon-cqrs-event-sourcing
 2. H2 Database
     https://www.h2database.com/html/main.html
 
