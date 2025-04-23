@@ -1,26 +1,49 @@
 # Easy Bank Section 3
 
-All of these Microservices implements next patters:
+All of these Microservices were developed by Spring Boot Framework and implementing next patters:
 
-1. Command Query Responsibility Segregation (CQRS)
-2. Event Source 
+1. Service Registration and Discovery
+2. Command Query Responsibility Segregation (CQRS)
+3. Event Source
 
 
-In this section you will need to AxonIQ.
+# Dependencies
+All of these Microservices are based on:
 
+1. Axon.
     https://www.axoniq.io/
+2. H2 Database
+    https://www.h2database.com/html/main.html
 
-# Axon Server Setup Locally Using Docker
 
-Axon Server provides an easy-to-use event store and messaging platform that is tailored for event-driven microservice architectures using Axon Framework. Follow these steps to set up Axon Server on your local machine using Docker.
+# Axon 
 
-## Steps for Local Setup
+Axon is composed by three main components which are:
+
+1. Axon Framework is a framework that provides a set of tools for building event-driven microservices.
+2. Axon Server is a server that stores and processes events from Axon Framework.
+3. AxonIQ Console is a web-based tool that provides a user-friendly interface for managing Axon Framework and Axon.
+
+
+## Axon Server Setup Locally Using Docker
+
+Axon Server provides an easy-to-use event store and messaging platform that is tailored for event-driven microservice
+architectures using Axon Framework. Follow these steps to set up Axon Server on your local machine using Docker.
+
+## Steps for Local Setup by Docker
+
+This setup allows you to run Axon Server locally while ensuring that all important data (like events and configurations)
+persist even if the container is stopped or removed. Each volume maps specific local directories to the container,
+ensuring that Axon Server has access to the necessary configuration, data, and events on your system.
+
+Note: Make sure create all subfolder inside your user directory.
 
 ### 1. Create the Axon Server Folder Structure
 
 **Create a Folder Named `axonserver`:**  
 
-   On your Desktop (or any preferred location), create a new folder named **axonserver**. This   will be used to store Axon Server configuration, data, and events.
+   On your Desktop (or any preferred location), create a new folder named **axonserver**. This   will be used to store
+   Axon Server configuration, data, and events.
 
 **Subfolders:**
 
@@ -31,7 +54,8 @@ Axon Server provides an easy-to-use event store and messaging platform that is t
 
 ### 2. Configure Axon Server
 
-In the `config` folder, create a file named **axonserver.properties**. This file will contain configuration settings for the Axon Server. Add the following properties inside the file:
+In the `config` folder, create a file named **axonserver.properties**. This file will contain configuration settings 
+for the Axon Server. Add the following properties inside the file:
 
 ```
 server.port=8024
@@ -71,18 +95,18 @@ docker run -d --name axonserver \
 
 ### 4. Verify the Setup
 
-Once the container is running, you can verify the Axon Server by visiting [http://localhost:8024](http://localhost:8024) in your browser. This should open the Axon Server dashboard.
+Once the container is running, you can verify the Axon Server by visiting [http://localhost:8024](http://localhost:8024) in your browser.
+This should open the Axon Server dashboard.
+
+In this section you can make queries in order to find the aggregate identifier of each microservice.
+    
+    aggregateIdentifier="IDENTIFIER"
 
 ---
 
-This setup allows you to run Axon Server locally while ensuring that all important data (like events and configurations) persist even if the container is stopped or removed. Each volume maps specific local directories to the container, ensuring that Axon Server has access to the necessary configuration, data, and events on your system.
-
-
-## Axon Server Dashboard
-aggregateIdentifier=""
-
-## Database used it
-Also, all of these microservices used H2 Database which creating the database in user directory since the database is based on file. On the other hand, to explore the content's database you could access by next URL:
+# H2 Database
+Also, all of these microservices used H2 Database which creating the database in user directory since the database 
+is based on file. On the other hand, to explore the content's database you could access by next URL:
 
     http://{HOST}:{PORT}/h2-console/
 
@@ -102,7 +126,7 @@ For example:
     http://localhost:8070/h2-console/ 
 
 
-## Order to start each Microservice
+# Order to start each Microservice
 You have to start each microservice according to next order:
 
 1. Eureka Server
