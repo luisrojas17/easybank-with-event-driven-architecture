@@ -1,10 +1,11 @@
-# Easy Bank Section 3
+# Easy Bank Section 4
 
 All of these Microservices were developed by Spring Boot Framework and implementing next patters:
 
-1. Service Registration and Discovery
-2. Command Query Responsibility Segregation (CQRS)
-3. Event Source
+1. Service Registration and Discovery Pattern
+2. Command Query Responsibility Segregation (CQRS) Pattern
+3. Event Source Pattern
+4. Materialized View Pattern
 
 
 # Dependencies
