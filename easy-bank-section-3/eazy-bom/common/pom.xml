@@ -10,7 +10,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>com.easybank</groupId>
     <artifactId>common</artifactId>
     <version>${common-lib.version}</version>
     <name>common</name>
