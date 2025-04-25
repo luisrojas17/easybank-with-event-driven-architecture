@@ -3,35 +3,29 @@ package com.easybank.loans.controller;
 import com.easybank.loans.constants.LoansConstants;
 import com.easybank.loans.dto.LoanDto;
 import com.easybank.loans.dto.ResponseDto;
-import com.easybank.loans.service.LoansService;
+import com.easybank.loans.service.LoanService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author Eazy Bytes
- */
-
+@Validated
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
-@Validated
+@RequiredArgsConstructor
 public class LoanController {
 
-    private final LoansService loansService;
-
-    public LoanController(LoansService loansService) {
-        this.loansService = loansService;
-    }
+    private final LoanService loanService;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createLoan(@RequestParam("mobileNumber")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
     String mobileNumber) {
-        loansService.createLoan(mobileNumber);
+        loanService.create(mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(LoansConstants.STATUS_201, LoansConstants.MESSAGE_201));
@@ -41,13 +35,13 @@ public class LoanController {
     public ResponseEntity<LoanDto> fetchLoanDetails(@RequestParam("mobileNumber")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
     String mobileNumber) {
-        LoanDto loanDto = loansService.fetchLoan(mobileNumber);
+        LoanDto loanDto = loanService.fetch(mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(loanDto);
     }
 
     @PutMapping("/update")
     public ResponseEntity<ResponseDto> updateLoanDetails(@Valid @RequestBody LoanDto loanDto) {
-        boolean isUpdated = loansService.updateLoan(loanDto);
+        boolean isUpdated = loanService.update(loanDto);
         if (isUpdated) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -63,7 +57,7 @@ public class LoanController {
     @PatchMapping("/delete")
     public ResponseEntity<ResponseDto> deleteLoanDetails(@RequestParam("loanNumber")
     Long loanNumber) {
-        boolean isDeleted = loansService.deleteLoan(loanNumber);
+        boolean isDeleted = loanService.delete(loanNumber);
         if (isDeleted) {
             return ResponseEntity
                     .status(HttpStatus.OK)

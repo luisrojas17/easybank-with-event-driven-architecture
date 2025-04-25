@@ -20,7 +20,7 @@ public class GatewayServerApplication {
         return routeLocatorBuilder.routes()
                 .route(p -> p
                         .path("/eazybank/customers/**")
-                        .filters(f -> f.rewritePath("/eazybank/customer/(?<segment>.*)", "/${segment}")
+                        .filters(f -> f.rewritePath("/eazybank/customers/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
                         .uri("lb://CUSTOMERS"))
                 .route(p -> p

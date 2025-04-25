@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerSummaryClient {
 
-    @GetExchange(value= "/eazybank/customer/api/fetch", accept = "application/json")
+    @GetExchange(value= "/eazybank/customers/api/fetch", accept = "application/json")
     Mono<ResponseEntity<CustomerDto>> fetchCustomerDetails(@RequestParam("mobileNumber") String mobileNumber);
 
     @GetExchange(value= "/eazybank/accounts/api/fetch", accept = "application/json")

@@ -6,6 +6,7 @@ All of these Microservices were developed by Spring Boot Framework and implement
 2. API Composition
 3. SAGA 
 
+
 # Dependencies
 
 All of these Microservices are based on:
@@ -15,7 +16,27 @@ All of these Microservices are based on:
 2. H2 Database
    https://www.h2database.com/html/main.html
 
+
 # RabbitMQ
+
+## Setup and Run RabbitMQ by Docker Container
+
+Go to next URL:
+
+    https://www.rabbitmq.com/docs/download
+
+```
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management
+```
+
+## Verify the Setup
+
+Go to browser and typing next URL in address bar:
+
+    http://localhost:15672
+
+and provide next credentials: guest/guest
+    
 
 # H2 Database
 Also, all of these microservices used H2 Database which creating the database in user directory since the database
@@ -39,7 +60,7 @@ For example:
     http://localhost:8070/h2-console/ 
 
 
-## Order to start each Microservice
+## Order to Start each Microservice
 You have to start each microservice according to next order:
 
 1. Eureka Server

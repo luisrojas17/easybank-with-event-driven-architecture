@@ -6,48 +6,42 @@ import com.easybank.card.dto.ResponseDto;
 import com.easybank.card.service.CardService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author Eazy Bytes
- */
-
+@Validated
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
-@Validated
+@RequiredArgsConstructor
 public class CardController {
 
     private final CardService cardService;
 
-    public CardController(CardService cardService) {
-        this.cardService = cardService;
-    }
-
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createCard(@Valid @RequestParam("mobileNumber")
+    public ResponseEntity<ResponseDto> create(@Valid @RequestParam("mobileNumber")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
     String mobileNumber) {
-        cardService.createCard(mobileNumber);
+        cardService.create(mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(CardsConstants.STATUS_201, CardsConstants.MESSAGE_201));
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<CardDto> fetchCardDetails(@RequestParam("mobileNumber")
+    public ResponseEntity<CardDto> fetch(@RequestParam("mobileNumber")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
     String mobileNumber) {
-        CardDto cardDto = cardService.fetchCard(mobileNumber);
+        CardDto cardDto = cardService.fetch(mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(cardDto);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateCardDetails(@Valid @RequestBody CardDto cardDto) {
-        boolean isUpdated = cardService.updateCard(cardDto);
+    public ResponseEntity<ResponseDto> update(@Valid @RequestBody CardDto cardDto) {
+        boolean isUpdated = cardService.update(cardDto);
         if (isUpdated) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -60,9 +54,9 @@ public class CardController {
     }
 
     @PatchMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteCardDetails(@RequestParam("cardNumber")
+    public ResponseEntity<ResponseDto> delete(@RequestParam("cardNumber")
     Long cardNumber) {
-        boolean isDeleted = cardService.deleteCard(cardNumber);
+        boolean isDeleted = cardService.delete(cardNumber);
         if (isDeleted) {
             return ResponseEntity
                     .status(HttpStatus.OK)

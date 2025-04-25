@@ -139,7 +139,7 @@ For example:
     http://localhost:8070/h2-console/ 
 
 
-# Order to start each Microservice
+# Order to Start each Microservice
 You have to start each microservice according to next order:
 
 1. Eureka Server

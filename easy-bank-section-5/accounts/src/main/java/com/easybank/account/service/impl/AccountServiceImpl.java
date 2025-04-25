@@ -8,8 +8,10 @@ import com.easybank.account.exception.ResourceNotFoundException;
 import com.easybank.account.mapper.AccountMapper;
 import com.easybank.account.repository.AccountRepository;
 import com.easybank.account.service.AccountService;
-import lombok.AllArgsConstructor;
+import com.easybank.common.dto.MobileNumberToUpdateDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,28 +19,26 @@ import java.util.Random;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-    /**
-     * @param mobileNumber - String
-     */
+    private StreamBridge streamBridge;
+
     @Override
-    public void createAccount(String mobileNumber) {
-        Optional<AccountEntity> optionalAccounts= accountRepository.findByMobileNumberAndActiveSw(mobileNumber,
-                AccountsConstants.ACTIVE_SW);
+    public void create(String mobileNumber) {
+        Optional<AccountEntity> optionalAccounts=
+                accountRepository.findByMobileNumberAndActiveSw(mobileNumber, AccountsConstants.ACTIVE_SW);
+
         if(optionalAccounts.isPresent()){
-            throw new AccountAlreadyExistsException("Account already registered with given mobileNumber "+mobileNumber);
+            throw new AccountAlreadyExistsException("Account already registered with given mobileNumber "
+                    + mobileNumber);
         }
+
         accountRepository.save(createNewAccount(mobileNumber));
     }
 
-    /**
-     * @param mobileNumber - String
-     * @return the new account details
-     */
     private AccountEntity createNewAccount(String mobileNumber) {
         AccountEntity newAccount = new AccountEntity();
         newAccount.setMobileNumber(mobileNumber);
@@ -50,15 +50,14 @@ public class AccountServiceImpl implements AccountService {
         return newAccount;
     }
 
-    /**
-     * @param mobileNumber - Input Mobile Number
-     * @return Accounts Details based on a given mobileNumber
-     */
     @Override
-    public AccountDto fetchAccount(String mobileNumber) {
-        AccountEntity account = accountRepository.findByMobileNumberAndActiveSw(mobileNumber, AccountsConstants.ACTIVE_SW)
-                .orElseThrow(() -> new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
-        );
+    public AccountDto fetch(String mobileNumber) {
+        AccountEntity account =
+                accountRepository.findByMobileNumberAndActiveSw(
+                        mobileNumber, AccountsConstants.ACTIVE_SW)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("Account", "mobileNumber", mobileNumber));
+
         AccountDto accountDto = AccountMapper.mapToDto(account, new AccountDto());
 
         log.info("Accounts details for mobileNumber [{}], [{}]",
@@ -67,33 +66,74 @@ public class AccountServiceImpl implements AccountService {
         return accountDto;
     }
 
-    /**
-     * @param accountDto - AccountsDto Object
-     * @return boolean indicating if the update of Account details is successful or not
-     */
     @Override
-    public boolean updateAccount(AccountDto accountDto) {
-        AccountEntity account = accountRepository.findByMobileNumberAndActiveSw(accountDto.getMobileNumber(),
-                AccountsConstants.ACTIVE_SW).orElseThrow(() -> new ResourceNotFoundException("Account", "mobileNumber",
+    public boolean update(AccountDto accountDto) {
+        AccountEntity account =
+                accountRepository.findByMobileNumberAndActiveSw(
+                        accountDto.getMobileNumber(), AccountsConstants.ACTIVE_SW)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("Account", "mobileNumber",
                 accountDto.getMobileNumber()));
+
         AccountMapper.mapToEntity(accountDto, account);
         accountRepository.save(account);
-        return  true;
-    }
 
-    /**
-     * @param accountNumber - Input Account Number
-     * @return boolean indicating if the delete of Account details is successful or not
-     */
-    @Override
-    public boolean deleteAccount(Long accountNumber) {
-        AccountEntity account = accountRepository.findById(accountNumber).orElseThrow(
-                () -> new ResourceNotFoundException("Account", "accountNumber", accountNumber.toString())
-        );
-        account.setActiveSw(AccountsConstants.IN_ACTIVE_SW);
-        accountRepository.save(account);
         return true;
     }
 
+    @Override
+    public boolean delete(Long accountNumber) {
+        AccountEntity account = accountRepository.findById(accountNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "accountNumber", accountNumber.toString())
+        );
+
+        account.setActiveSw(AccountsConstants.IN_ACTIVE_SW);
+        accountRepository.save(account);
+
+        return true;
+    }
+
+    @Override
+    public boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
+
+        log.info("Updating mobile number [{}].",
+                mobileNumberToUpdateDto.getCurrentMobileNumber());
+
+        AccountEntity accountEntity =
+                accountRepository.findByMobileNumberAndActiveSw(
+                        mobileNumberToUpdateDto.getCurrentMobileNumber(), AccountsConstants.ACTIVE_SW)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("Account", "mobileNumber",
+                                        mobileNumberToUpdateDto.getCurrentMobileNumber()));
+
+        accountEntity.setMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber());
+
+        accountRepository.save(accountEntity);
+
+        log.info("Mobile number [{}] was updated to [{}] successfully.",
+                mobileNumberToUpdateDto.getCurrentMobileNumber(), mobileNumberToUpdateDto.getNewMobileNumber());
+
+        publishEvent(mobileNumberToUpdateDto);
+
+        return true;
+    }
+
+    /**
+     * This method publish an event in to Card Queue in order to update the mobile number
+     * for Card Microservice and keeping the data consistency through all Microservices' Databases.
+     *
+     * @param mobileNumberToUpdateDto an instance of MobileNumberToUpdateDto which contains current and new
+     *                                mobile number to be updated.
+     */
+    private void publishEvent(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
+
+        log.info("Publishing event to update mobile number [{}].",
+                mobileNumberToUpdateDto);
+
+        var result =
+                streamBridge.send("updateCardMobileNumber-out-0", mobileNumberToUpdateDto);
+
+        log.info("Event published successfully [{}].", result);
+    }
 
 }

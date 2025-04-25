@@ -1,35 +1,17 @@
 package com.easybank.account.service;
 
 import com.easybank.account.dto.AccountDto;
+import com.easybank.common.dto.MobileNumberToUpdateDto;
 
 public interface AccountService {
 
-    /**
-     *
-     * @param mobileNumber - Input Mobile Number
-     */
-    void createAccount(String mobileNumber);
+    void create(String mobileNumber);
 
-    /**
-     *
-     * @param mobileNumber - Input Mobile Number
-     * @return Accounts Details based on a given mobileNumber
-     */
-    AccountDto fetchAccount(String mobileNumber);
+    AccountDto fetch(String mobileNumber);
 
-    /**
-     *
-     * @param accountDto - AccountsDto Object
-     * @return boolean indicating if the update of Account details is successful or not
-     */
-    boolean updateAccount(AccountDto accountDto);
+    boolean update(AccountDto accountDto);
 
-    /**
-     *
-     * @param accountNumber - Input Account Number
-     * @return boolean indicating if the delete of Account details is successful or not
-     */
-    boolean deleteAccount(Long accountNumber);
+    boolean delete(Long accountNumber);
 
-
+    boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
 }
