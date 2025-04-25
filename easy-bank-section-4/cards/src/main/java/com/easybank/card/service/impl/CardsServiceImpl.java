@@ -5,7 +5,7 @@ import com.easybank.card.dto.CardDto;
 import com.easybank.card.entity.CardEntity;
 import com.easybank.card.exception.CardAlreadyExistsException;
 import com.easybank.card.exception.ResourceNotFoundException;
-import com.easybank.card.mapper.CardsMapper;
+import com.easybank.card.mapper.CardMapper;
 import com.easybank.card.repository.CardsRepository;
 import com.easybank.card.service.CardsService;
 import com.easybank.common.event.CardDataChangedEvent;
@@ -59,7 +59,7 @@ public class CardsServiceImpl implements CardsService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Card", "mobileNumber", mobileNumber));
 
-        CardDto cardDto = CardsMapper.mapToDto(card, new CardDto());
+        CardDto cardDto = CardMapper.mapToDto(card, new CardDto());
 
         log.info("Card details for mobileNumber [{}] is [{}].",
                 mobileNumber, cardDto);
@@ -79,7 +79,7 @@ public class CardsServiceImpl implements CardsService {
                         new ResourceNotFoundException("Card", "CardNumber",
                                 cardDto.getCardNumber().toString()));
 
-        CardsMapper.mapToEntity(cardDto, cardEntity);
+        CardMapper.mapToEntity(cardDto, cardEntity);
         cardsRepository.save(cardEntity);
 
         return true;

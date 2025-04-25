@@ -131,7 +131,7 @@ For example:
     http://localhost:8082/h2-console/
 3. Loans
     http://localhost:8083/h2-console/
-4. Customer
+4. Customers
     http://localhost:8080/h2-console/
 5. Gateway
     http://localhost:8072/h2-console/

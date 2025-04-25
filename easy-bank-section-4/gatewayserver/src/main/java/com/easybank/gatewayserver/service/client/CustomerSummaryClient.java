@@ -1,9 +1,9 @@
 package com.easybank.gatewayserver.service.client;
 
-import com.easybank.gatewayserver.dto.AccountsDto;
-import com.easybank.gatewayserver.dto.CardsDto;
+import com.easybank.gatewayserver.dto.AccountDto;
+import com.easybank.gatewayserver.dto.CardDto;
 import com.easybank.gatewayserver.dto.CustomerDto;
-import com.easybank.gatewayserver.dto.LoansDto;
+import com.easybank.gatewayserver.dto.LoanDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
@@ -11,16 +11,16 @@ import reactor.core.publisher.Mono;
 
 public interface CustomerSummaryClient {
 
-    @GetExchange(value= "/eazybank/customer/api/fetch", accept = "application/json")
+    @GetExchange(value= "/eazybank/customers/api/fetch", accept = "application/json")
     Mono<ResponseEntity<CustomerDto>> fetchCustomerDetails(@RequestParam("mobileNumber") String mobileNumber);
 
     @GetExchange(value= "/eazybank/accounts/api/fetch", accept = "application/json")
-    Mono<ResponseEntity<AccountsDto>> fetchAccountDetails(@RequestParam("mobileNumber") String mobileNumber);
+    Mono<ResponseEntity<AccountDto>> fetchAccountDetails(@RequestParam("mobileNumber") String mobileNumber);
 
     @GetExchange(value= "/eazybank/loans/api/fetch", accept = "application/json")
-    Mono<ResponseEntity<LoansDto>> fetchLoanDetails(@RequestParam("mobileNumber") String mobileNumber);
+    Mono<ResponseEntity<LoanDto>> fetchLoanDetails(@RequestParam("mobileNumber") String mobileNumber);
 
     @GetExchange(value= "/eazybank/cards/api/fetch", accept = "application/json")
-    Mono<ResponseEntity<CardsDto>> fetchCardDetails(@RequestParam("mobileNumber") String mobileNumber);
+    Mono<ResponseEntity<CardDto>> fetchCardDetails(@RequestParam("mobileNumber") String mobileNumber);
 
 }

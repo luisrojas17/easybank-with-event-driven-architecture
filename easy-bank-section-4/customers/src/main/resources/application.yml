@@ -37,8 +37,8 @@ management:
 
 info:
   app:
-    name: "customer"
-    description: "Easy Bank Customer Application"
+    name: "customers"
+    description: "Easy Bank Customers Application"
     version: "1.0.0"
 
 logging:
