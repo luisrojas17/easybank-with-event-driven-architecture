@@ -24,14 +24,19 @@ spring:
     connection-timeout: 10s
   cloud:
     function:
-      definition: updateCardMobileNumber
+      definition: updateCardMobileNumber;rollbackCardMobileNumber
     stream:
       bindings:
         updateCardMobileNumber-in-0:
           destination: update-card-mobile-number
           group: ${spring.application.name}
-        updateLoanMobileNumber-out-0:
+        updateLoanMobileNumber-out-0:       # This sends the message to update mobile number in loans database
           destination: update-loan-mobile-number
+        rollbackAccountMobileNumber-out-0:  # This sends the message to rollback mobile number in accounts database
+          destination: rollback-account-mobile-number
+        rollbackCardMobileNumber-in-0:      # This receives the message to rollback mobile number in cards database
+          destination: rollback-card-mobile-number
+          group: ${spring.application.name}
 
 eureka:
   instance:

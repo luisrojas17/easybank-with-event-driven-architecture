@@ -30,9 +30,10 @@ spring:
         updateLoanMobileNumber-in-0:
           destination: update-loan-mobile-number
           group: ${spring.application.name}
-        updateMobileNumberStatus-out-0:
+        updateMobileNumberStatus-out-0:       # This sends the message to confirm transaction complete in customers database
           destination: update-mobile-number-status
-
+        rollbackCardMobileNumber-out-0:       # This sends the message to rollback mobile number in cards database
+          destination: rollback-card-mobile-number
 
 eureka:
   instance:

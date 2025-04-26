@@ -15,4 +15,6 @@ public interface CardService {
 
     boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
 
+    boolean rollbackMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
+
 }

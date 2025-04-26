@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Optional;
 import java.util.Random;
@@ -81,45 +83,66 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
 
         log.info("Updating mobile number [{}].",
                 mobileNumberToUpdateDto.getCurrentMobileNumber());
 
-        LoanEntity loanEntity =
-                loanRepository.findByMobileNumberAndActiveSw(
-                        mobileNumberToUpdateDto.getCurrentMobileNumber(), LoansConstants.ACTIVE_SW)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException("Loan", "mobileNumber",
-                                        mobileNumberToUpdateDto.getCurrentMobileNumber()));
+        boolean result = false;
 
-        loanEntity.setMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber());
-        loanRepository.save(loanEntity);
+        try {
 
-        log.info("Mobile number [{}] was updated to [{}] successfully.",
-                mobileNumberToUpdateDto.getCurrentMobileNumber(), mobileNumberToUpdateDto.getNewMobileNumber());
+            LoanEntity loanEntity =
+                    loanRepository.findByMobileNumberAndActiveSw(
+                                    mobileNumberToUpdateDto.getCurrentMobileNumber(), LoansConstants.ACTIVE_SW)
+                            .orElseThrow(() ->
+                                    new ResourceNotFoundException("Loan", "mobileNumber",
+                                            mobileNumberToUpdateDto.getCurrentMobileNumber()));
 
-        publishEvent(mobileNumberToUpdateDto);
+            loanEntity.setMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber());
+            loanRepository.save(loanEntity);
 
-        return true;
+            log.info("Mobile number [{}] was updated to [{}] successfully.",
+                    mobileNumberToUpdateDto.getCurrentMobileNumber(), mobileNumberToUpdateDto.getNewMobileNumber());
+
+            //throw new RuntimeException("This is a test to make RollBack");
+
+            // Throws the event to confirm transaction has been completed in Customers Microservice
+            publishEvent("updateMobileNumberStatus-out-0", mobileNumberToUpdateDto);
+
+            result = true;
+
+        } catch (Exception e) {
+            log.error("Error while updating mobile number [{}].",
+                    mobileNumberToUpdateDto.getCurrentMobileNumber(), e);
+
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+            // Throws the event to make rollback in Cards Microservice
+            publishEvent("rollbackCardMobileNumber-out-0", mobileNumberToUpdateDto);
+        }
+
+        return result;
     }
 
     /**
      * This method publish status event into a Queue in order to update the mobile number status
      * for all Microservice and keeping the data consistency through all Microservices' Databases.
      *
+     * @param bindingName the name of the binding which represents the destination Queue.
      * @param mobileNumberToUpdateDto an instance of MobileNumberToUpdateDto which contains current and new
      *                                mobile number to be updated.
      */
-    private void publishEvent(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
+    private void publishEvent(String bindingName, MobileNumberToUpdateDto mobileNumberToUpdateDto) {
 
-        log.info("Publishing event to update mobile number [{}].",
-                mobileNumberToUpdateDto);
+        log.info("Publishing event into [{}] to update mobile number [{}].",
+                bindingName, mobileNumberToUpdateDto);
 
         var result =
-                streamBridge.send("updateMobileNumberStatus-out-0", mobileNumberToUpdateDto);
+                streamBridge.send(bindingName, mobileNumberToUpdateDto);
 
-        log.info("Event published successfully [{}].", result);
+        log.info("Event published into [{}] successfully [{}].", bindingName, result);
     }
 
 }

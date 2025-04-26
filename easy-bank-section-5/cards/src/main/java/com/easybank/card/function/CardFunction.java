@@ -22,4 +22,16 @@ public class CardFunction {
             cardService.updateMobileNumber(mobileNumberToUpdateDto);
         };
     }
+
+    @Bean
+    public Consumer<MobileNumberToUpdateDto> rollbackCardMobileNumber(CardService cardService) {
+        return (mobileNumberToUpdateDto) -> {
+
+            log.info("Receiving event to make rollback for card mobile number [{}].",
+                    mobileNumberToUpdateDto);
+
+            cardService.rollbackMobileNumber(mobileNumberToUpdateDto);
+        };
+    }
+
 }

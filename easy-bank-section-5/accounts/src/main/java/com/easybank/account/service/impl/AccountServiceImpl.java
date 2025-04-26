@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Optional;
 import java.util.Random;
@@ -94,26 +96,71 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
 
         log.info("Updating mobile number [{}].",
                 mobileNumberToUpdateDto.getCurrentMobileNumber());
 
+        boolean result = false;
+
+        try {
+
+            AccountEntity accountEntity =
+                    accountRepository.findByMobileNumberAndActiveSw(
+                                    mobileNumberToUpdateDto.getCurrentMobileNumber(), AccountsConstants.ACTIVE_SW)
+                            .orElseThrow(() ->
+                                    new ResourceNotFoundException("Account", "mobileNumber",
+                                            mobileNumberToUpdateDto.getCurrentMobileNumber()));
+
+            accountEntity.setMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber());
+
+            accountRepository.save(accountEntity);
+
+            log.info("Mobile number [{}] was updated to [{}] successfully.",
+                    mobileNumberToUpdateDto.getCurrentMobileNumber(), mobileNumberToUpdateDto.getNewMobileNumber());
+
+            //throw new RuntimeException("This is a test to make RollBack");
+
+            // Throws the event to update Cards Microservice
+            publishEvent("updateCardMobileNumber-out-0", mobileNumberToUpdateDto);
+
+            result = true;
+
+        } catch (Exception e) {
+            log.error("Error while updating mobile number [{}].",
+                    mobileNumberToUpdateDto.getCurrentMobileNumber(), e);
+
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
+            // Throws the event to make rollback in Customers Microservice
+            publishEvent("rollbackCustomerMobileNumber-out-0", mobileNumberToUpdateDto);
+        }
+
+        return result;
+    }
+
+    @Override
+    public boolean rollbackMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
+
+        log.info("Starting to rollback account mobile number [{}].", mobileNumberToUpdateDto);
+
         AccountEntity accountEntity =
                 accountRepository.findByMobileNumberAndActiveSw(
-                        mobileNumberToUpdateDto.getCurrentMobileNumber(), AccountsConstants.ACTIVE_SW)
+                                mobileNumberToUpdateDto.getNewMobileNumber(), AccountsConstants.ACTIVE_SW)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException("Account", "mobileNumber",
-                                        mobileNumberToUpdateDto.getCurrentMobileNumber()));
+                                        mobileNumberToUpdateDto.getNewMobileNumber()));
 
-        accountEntity.setMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber());
+        accountEntity.setMobileNumber(mobileNumberToUpdateDto.getCurrentMobileNumber());
 
         accountRepository.save(accountEntity);
 
-        log.info("Mobile number [{}] was updated to [{}] successfully.",
-                mobileNumberToUpdateDto.getCurrentMobileNumber(), mobileNumberToUpdateDto.getNewMobileNumber());
+        log.info("Rollback for mobile number [{}] was updated to successfully.",
+                mobileNumberToUpdateDto);
 
-        publishEvent(mobileNumberToUpdateDto);
+        // Throws the event to make rollback in Customers Microservice
+        publishEvent("rollbackCustomerMobileNumber-out-0", mobileNumberToUpdateDto);
 
         return true;
     }
@@ -122,18 +169,19 @@ public class AccountServiceImpl implements AccountService {
      * This method publish an event in to Card Queue in order to update the mobile number
      * for Card Microservice and keeping the data consistency through all Microservices' Databases.
      *
+     * @param bindingName the name of the binding which represents the destination Queue.
      * @param mobileNumberToUpdateDto an instance of MobileNumberToUpdateDto which contains current and new
      *                                mobile number to be updated.
      */
-    private void publishEvent(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
+    private void publishEvent(String bindingName, MobileNumberToUpdateDto mobileNumberToUpdateDto) {
 
-        log.info("Publishing event to update mobile number [{}].",
-                mobileNumberToUpdateDto);
+        log.info("Publishing event into [{}] to update mobile number [{}].",
+                bindingName, mobileNumberToUpdateDto);
 
         var result =
-                streamBridge.send("updateCardMobileNumber-out-0", mobileNumberToUpdateDto);
+                streamBridge.send(bindingName, mobileNumberToUpdateDto);
 
-        log.info("Event published successfully [{}].", result);
+        log.info("Event published into [{}] successfully [{}].", bindingName, result);
     }
 
 }

@@ -14,4 +14,6 @@ public interface CustomerService {
     boolean delete(String customerId);
 
     boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
+
+    boolean rollbackMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
 }

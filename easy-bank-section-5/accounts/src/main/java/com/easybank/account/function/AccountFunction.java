@@ -23,4 +23,15 @@ public class AccountFunction {
         };
     }
 
+    @Bean
+    public Consumer<MobileNumberToUpdateDto> rollbackAccountMobileNumber(AccountService accountService) {
+        return (mobileNumberToUpdateDto) -> {
+
+            log.info("Receiving event to make rollback for account mobile number [{}].",
+                    mobileNumberToUpdateDto);
+
+            accountService.rollbackMobileNumber(mobileNumberToUpdateDto);
+        };
+    }
+
 }

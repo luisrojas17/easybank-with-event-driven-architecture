@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -73,6 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
 
         log.info("Updating mobile number [{}].",
@@ -92,7 +94,32 @@ public class CustomerServiceImpl implements CustomerService {
         log.info("Mobile number [{}] was updated to [{}] successfully.",
                 mobileNumberToUpdateDto.getCurrentMobileNumber(), mobileNumberToUpdateDto.getNewMobileNumber());
 
+        //throw new RuntimeException("This is a test to make RollBack");
+
+        // Throws the event to update mobile number in Accounts Microservice
         publishEvent(mobileNumberToUpdateDto);
+
+        return true;
+    }
+
+    @Override
+    public boolean rollbackMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto) {
+
+        log.info("Starting to rollback customer mobile number [{}].", mobileNumberToUpdateDto);
+
+        CustomerEntity customerEntity =
+                customerRepository.findByMobileNumberAndActiveSw(
+                                mobileNumberToUpdateDto.getNewMobileNumber(), true)
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException("Customer", "mobileNumber",
+                                        mobileNumberToUpdateDto.getNewMobileNumber()));
+
+        customerEntity.setMobileNumber(mobileNumberToUpdateDto.getCurrentMobileNumber());
+
+        customerRepository.save(customerEntity);
+
+        log.info("Rollback for mobile number [{}] was updated to successfully.",
+                mobileNumberToUpdateDto);
 
         return true;
     }

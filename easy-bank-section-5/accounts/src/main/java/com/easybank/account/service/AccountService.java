@@ -14,4 +14,7 @@ public interface AccountService {
     boolean delete(Long accountNumber);
 
     boolean updateMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
+
+    boolean rollbackMobileNumber(MobileNumberToUpdateDto mobileNumberToUpdateDto);
+
 }
