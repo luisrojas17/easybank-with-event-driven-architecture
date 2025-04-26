@@ -1,6 +1,5 @@
 package com.easybank.card.function;
 
-import com.easybank.card.constants.CardsConstants;
 import com.easybank.card.service.CardService;
 import com.easybank.common.dto.MobileNumberToUpdateDto;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,7 @@ public class CardFunction {
             log.info("Receiving event to update card mobile number [{}].",
                     mobileNumberToUpdateDto);
 
-            var result = cardService.updateMobileNumber(mobileNumberToUpdateDto);
+            cardService.updateMobileNumber(mobileNumberToUpdateDto);
         };
     }
 }

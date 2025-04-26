@@ -19,7 +19,7 @@ public class LoanFunction {
             log.info("Receiving event to update loan mobile number [{}].",
                     mobileNumberToUpdateDto);
 
-            var result = loanService.updateMobileNumber(mobileNumberToUpdateDto);
+            loanService.updateMobileNumber(mobileNumberToUpdateDto);
         };
     }
 

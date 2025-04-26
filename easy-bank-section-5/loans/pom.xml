@@ -11,10 +11,10 @@
 		<relativePath>../eazy-bom/pom.xml</relativePath>
 	</parent>
 
-	<artifactId>loanEntity</artifactId>
+	<artifactId>loan</artifactId>
 	<version>1.0.0</version>
 	<packaging>jar</packaging>
-	<name>loanEntity</name>
+	<name>loan</name>
 	<description>Microservice for Loans</description>
 
 	<dependencies>

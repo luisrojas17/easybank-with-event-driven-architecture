@@ -11,10 +11,10 @@
         <relativePath>../eazy-bom/pom.xml</relativePath>
     </parent>
 
-    <artifactId>cardEntity</artifactId>
+    <artifactId>card</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>cardEntity</name>
+    <name>card</name>
     <description>Microservice for Cards</description>
 
     <dependencies>

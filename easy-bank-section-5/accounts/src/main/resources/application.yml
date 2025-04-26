@@ -33,7 +33,6 @@ spring:
         updateCardMobileNumber-out-0:
           destination: update-card-mobile-number
 
-
 eureka:
   instance:
     preferIpAddress: true

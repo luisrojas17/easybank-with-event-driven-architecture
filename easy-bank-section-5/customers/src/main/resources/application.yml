@@ -29,6 +29,8 @@ spring:
       bindings:
         updateAccountMobileNumber-out-0:
           destination: update-account-mobile-number
+#        updateCardMobileNumber-out-0:
+#          destination: update-card-mobile-number
         updateMobileNumberStatus-in-0:
           destination: update-mobile-number-status
           group: ${spring.application.name}

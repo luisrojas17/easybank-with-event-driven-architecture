@@ -9,12 +9,10 @@ import com.easybank.customer.exception.ResourceNotFoundException;
 import com.easybank.customer.mapper.CustomerMapper;
 import com.easybank.customer.repository.CustomerRepository;
 import com.easybank.customer.service.CustomerService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
@@ -114,6 +112,7 @@ public class CustomerServiceImpl implements CustomerService {
         // The first parameter must be to same defined in application.yml -> cloud.stream.bindings
         var result =
                 streamBridge.send("updateAccountMobileNumber-out-0", mobileNumberToUpdateDto);
+                //streamBridge.send("updateCardMobileNumber-out-0", mobileNumberToUpdateDto);
 
         log.info("Event published successfully [{}].", result);
     }

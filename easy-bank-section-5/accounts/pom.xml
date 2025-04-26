@@ -9,10 +9,10 @@
         <relativePath>../eazy-bom/pom.xml</relativePath>
     </parent>
 
-    <artifactId>accountEntity</artifactId>
+    <artifactId>account</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>accountEntity</name>
+    <name>account</name>
     <description>Microservice for Accounts</description>
 
     <dependencies>

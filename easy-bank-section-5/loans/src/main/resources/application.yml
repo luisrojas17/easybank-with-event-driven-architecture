@@ -29,7 +29,7 @@ spring:
       bindings:
         updateLoanMobileNumber-in-0:
           destination: update-loan-mobile-number
-          group: {spring.application.name}
+          group: ${spring.application.name}
         updateMobileNumberStatus-out-0:
           destination: update-mobile-number-status
 

@@ -24,7 +24,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
 
-    private StreamBridge streamBridge;
+    private final StreamBridge streamBridge;
 
     @Override
     public void create(String mobileNumber) {
