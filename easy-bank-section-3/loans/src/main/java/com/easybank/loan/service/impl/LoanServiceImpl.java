@@ -5,7 +5,7 @@ import com.easybank.loan.dto.LoanDto;
 import com.easybank.loan.entity.LoanEntity;
 import com.easybank.loan.exception.LoanAlreadyExistsException;
 import com.easybank.loan.exception.ResourceNotFoundException;
-import com.easybank.loan.mapper.LoansMapper;
+import com.easybank.loan.mapper.LoanMapper;
 import com.easybank.loan.repository.LoanRepository;
 import com.easybank.loan.service.LoanService;
 import lombok.AllArgsConstructor;
@@ -46,7 +46,7 @@ public class LoanServiceImpl implements LoanService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Loan", "mobileNumber", mobileNumber));
 
-        return LoansMapper.mapToDto(loanEntity, new LoanDto());
+        return LoanMapper.mapToDto(loanEntity, new LoanDto());
     }
 
     @Override
@@ -57,7 +57,7 @@ public class LoanServiceImpl implements LoanService {
                         new ResourceNotFoundException("Loan", "LoanNumber",
                                 loanDto.getLoanNumber().toString()));
 
-        LoansMapper.mapToEntity(loanDto, loanEntity);
+        LoanMapper.mapToEntity(loanDto, loanEntity);
         loanRepository.save(loanEntity);
 
         return true;

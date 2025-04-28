@@ -2,7 +2,7 @@ package com.easybank.card.service;
 
 import com.easybank.card.dto.CardDto;
 
-public interface CardsService {
+public interface CardService {
 
     /**
      *

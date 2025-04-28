@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CardsRepository extends JpaRepository<CardEntity, Long> {
+public interface CardRepository extends JpaRepository<CardEntity, Long> {
 
     Optional<CardEntity> findByMobileNumberAndActiveSw(String mobileNumber, boolean activeSw);
 

@@ -3,7 +3,7 @@ package com.easybank.card.mapper;
 import com.easybank.card.dto.CardDto;
 import com.easybank.card.entity.CardEntity;
 
-public class CardsMapper {
+public class CardMapper {
 
     public static CardDto mapToDto(CardEntity cards, CardDto cardDto) {
         cardDto.setCardNumber(cards.getCardNumber());

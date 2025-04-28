@@ -3,7 +3,7 @@ package com.easybank.loan.mapper;
 import com.easybank.loan.dto.LoanDto;
 import com.easybank.loan.entity.LoanEntity;
 
-public class LoansMapper {
+public class LoanMapper {
 
     public static LoanDto mapToDto(LoanEntity loans, LoanDto loanDto) {
         loanDto.setLoanNumber(loans.getLoanNumber());

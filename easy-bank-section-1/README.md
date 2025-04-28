@@ -31,8 +31,8 @@ For example:
 You have to start each microservice according to next order:
 
 1. Eureka Server
-2. Gateway Server
-3. Customer
-4. Accounts
-5. Cards
-6. Loans
+2. Customer
+3. Accounts
+4. Cards
+5. Loans
+6. Gateway Server

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Data
-public class CardsDto {
+public class CardDto {
 
     @NotEmpty(message = "Mobile Number can not be a null or empty")
     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile Number must be 10 digits")

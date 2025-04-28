@@ -8,8 +8,8 @@ import lombok.Data;
 public class CustomerSummaryDto {
 
     private CustomerDto customer;
-    private AccountsDto account;
-    private LoansDto loan;
-    private CardsDto card;
+    private AccountDto account;
+    private LoanDto loan;
+    private CardDto card;
 
 }

@@ -21,17 +21,17 @@ public class CustomerCompositeHandler {
         String mobileNumber = serverRequest.queryParam("mobileNumber").get();
 
         Mono<ResponseEntity<CustomerDto>> customerDetails = customerSummaryClient.fetchCustomerDetails(mobileNumber);
-        Mono<ResponseEntity<AccountsDto>> accountDetails = customerSummaryClient.fetchAccountDetails(mobileNumber);
-        Mono<ResponseEntity<LoansDto>> loanDetails = customerSummaryClient.fetchLoanDetails(mobileNumber);
-        Mono<ResponseEntity<CardsDto>> cardDetails = customerSummaryClient.fetchCardDetails(mobileNumber);
+        Mono<ResponseEntity<AccountDto>> accountDetails = customerSummaryClient.fetchAccountDetails(mobileNumber);
+        Mono<ResponseEntity<LoanDto>> loanDetails = customerSummaryClient.fetchLoanDetails(mobileNumber);
+        Mono<ResponseEntity<CardDto>> cardDetails = customerSummaryClient.fetchCardDetails(mobileNumber);
 
         return Mono.zip(customerDetails, accountDetails, loanDetails, cardDetails)
                 .flatMap(tuple -> {
                     CustomerDto customerDto = tuple.getT1().getBody();
-                    AccountsDto accountsDto = tuple.getT2().getBody();
-                    LoansDto loansDto = tuple.getT3().getBody();
-                    CardsDto cardsDto = tuple.getT4().getBody();
-                    CustomerSummaryDto customerSummaryDto = new CustomerSummaryDto(customerDto, accountsDto, loansDto, cardsDto);
+                    AccountDto accountDto = tuple.getT2().getBody();
+                    LoanDto loanDto = tuple.getT3().getBody();
+                    CardDto cardDto = tuple.getT4().getBody();
+                    CustomerSummaryDto customerSummaryDto = new CustomerSummaryDto(customerDto, accountDto, loanDto, cardDto);
                     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                             .body(BodyInserters.fromValue(customerSummaryDto));
                 });

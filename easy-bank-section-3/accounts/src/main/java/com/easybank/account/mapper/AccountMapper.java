@@ -3,7 +3,7 @@ package com.easybank.account.mapper;
 import com.easybank.account.dto.AccountDto;
 import com.easybank.account.entity.AccountEntity;
 
-public class AccountsMapper {
+public class AccountMapper {
 
     public static AccountDto mapToDto(AccountEntity accounts, AccountDto accountDto) {
         accountDto.setAccountNumber(accounts.getAccountNumber());

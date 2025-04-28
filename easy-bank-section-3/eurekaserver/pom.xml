@@ -14,7 +14,7 @@
     <artifactId>eurekaserver</artifactId>
     <version>1.0.0</version>
     <name>eurekaserver</name>
-    <description>Service Discovery agent for Easy Bank icroservices</description>
+    <description>Service Discovery agent for Easy Bank Microservices</description>
 
     <dependencies>
         <dependency>

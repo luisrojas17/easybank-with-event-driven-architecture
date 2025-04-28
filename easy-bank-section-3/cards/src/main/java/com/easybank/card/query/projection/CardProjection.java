@@ -4,7 +4,7 @@ import com.easybank.card.command.event.CardCreatedEvent;
 import com.easybank.card.command.event.CardDeletedEvent;
 import com.easybank.card.command.event.CardUpdatedEvent;
 import com.easybank.card.dto.CardDto;
-import com.easybank.card.service.CardsService;
+import com.easybank.card.service.CardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.ProcessingGroup;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @ProcessingGroup("card-group")
 public class CardProjection {
 
-    private final CardsService cardsService;
+    private final CardService cardService;
 
     @EventHandler
     public void handler(CardCreatedEvent event) {
@@ -29,7 +29,7 @@ public class CardProjection {
 
         BeanUtils.copyProperties(event, dto);
 
-        cardsService.create(dto);
+        cardService.create(dto);
 
         log.info("CardCreatedEvent processed successfully.");
     }
@@ -43,7 +43,7 @@ public class CardProjection {
 
         BeanUtils.copyProperties(event, dto);
 
-        boolean result = cardsService.update(dto);
+        boolean result = cardService.update(dto);
 
         log.info("CardUpdatedEvent processed successfully [{}].", result);
     }
@@ -54,7 +54,7 @@ public class CardProjection {
         log.info("Processing CardDeletedEvent.\n\t[{}]",
                 event.getCardNumber());
 
-        boolean result = cardsService.delete(event.getCardNumber());
+        boolean result = cardService.delete(event.getCardNumber());
 
         log.info("CardDeletedEvent processed successfully [{}].", result);
     }

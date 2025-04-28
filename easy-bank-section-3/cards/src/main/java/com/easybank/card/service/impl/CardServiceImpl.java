@@ -5,9 +5,9 @@ import com.easybank.card.dto.CardDto;
 import com.easybank.card.entity.CardEntity;
 import com.easybank.card.exception.CardAlreadyExistsException;
 import com.easybank.card.exception.ResourceNotFoundException;
-import com.easybank.card.mapper.CardsMapper;
-import com.easybank.card.repository.CardsRepository;
-import com.easybank.card.service.CardsService;
+import com.easybank.card.mapper.CardMapper;
+import com.easybank.card.repository.CardRepository;
+import com.easybank.card.service.CardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -18,9 +18,9 @@ import java.util.Optional;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class CardsServiceImpl implements CardsService {
+public class CardServiceImpl implements CardService {
 
-    private CardsRepository cardsRepository;
+    private CardRepository cardRepository;
 
     /**
      * @param cardDto - CardsDto Object to create
@@ -30,7 +30,7 @@ public class CardsServiceImpl implements CardsService {
         String mobileNumber = cardDto.getMobileNumber();
 
         Optional<CardEntity> optionalCard =
-                cardsRepository.findByMobileNumberAndActiveSw(mobileNumber,
+                cardRepository.findByMobileNumberAndActiveSw(mobileNumber,
                     CardsConstants.ACTIVE_SW);
 
         if (optionalCard.isPresent()) {
@@ -41,7 +41,7 @@ public class CardsServiceImpl implements CardsService {
 
         BeanUtils.copyProperties(cardDto, entity);
 
-        cardsRepository.save(entity);
+        cardRepository.save(entity);
     }
 
     /**
@@ -50,12 +50,12 @@ public class CardsServiceImpl implements CardsService {
      */
     @Override
     public CardDto fetch(String mobileNumber) {
-        CardEntity card = cardsRepository.findByMobileNumberAndActiveSw(
+        CardEntity card = cardRepository.findByMobileNumberAndActiveSw(
                 mobileNumber, CardsConstants.ACTIVE_SW)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Card", "mobileNumber", mobileNumber));
 
-        CardDto cardDto = CardsMapper.mapToDto(card, new CardDto());
+        CardDto cardDto = CardMapper.mapToDto(card, new CardDto());
 
         log.info("Card details for mobileNumber [{}] is [{}].",
                 mobileNumber, cardDto);
@@ -69,14 +69,14 @@ public class CardsServiceImpl implements CardsService {
      */
     @Override
     public boolean update(CardDto cardDto) {
-        CardEntity cardEntity = cardsRepository.findByMobileNumberAndActiveSw(
+        CardEntity cardEntity = cardRepository.findByMobileNumberAndActiveSw(
                 cardDto.getMobileNumber(), CardsConstants.ACTIVE_SW)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Card", "CardNumber",
                                 cardDto.getCardNumber().toString()));
 
-        CardsMapper.mapToEntity(cardDto, cardEntity);
-        cardsRepository.save(cardEntity);
+        CardMapper.mapToEntity(cardDto, cardEntity);
+        cardRepository.save(cardEntity);
 
         return true;
     }
@@ -87,13 +87,13 @@ public class CardsServiceImpl implements CardsService {
      */
     @Override
     public boolean delete(Long cardNumber) {
-        CardEntity card = cardsRepository.findById(cardNumber)
+        CardEntity card = cardRepository.findById(cardNumber)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Card", "cardNumber",
                                 cardNumber.toString()));
 
         card.setActiveSw(CardsConstants.IN_ACTIVE_SW);
-        cardsRepository.save(card);
+        cardRepository.save(card);
 
         return true;
     }

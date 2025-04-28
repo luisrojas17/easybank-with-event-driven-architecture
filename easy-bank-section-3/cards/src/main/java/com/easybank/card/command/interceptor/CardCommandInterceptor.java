@@ -7,7 +7,7 @@ import com.easybank.card.constants.CardsConstants;
 import com.easybank.card.entity.CardEntity;
 import com.easybank.card.exception.CardAlreadyExistsException;
 import com.easybank.card.exception.ResourceNotFoundException;
-import com.easybank.card.repository.CardsRepository;
+import com.easybank.card.repository.CardRepository;
 import lombok.RequiredArgsConstructor;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.messaging.MessageDispatchInterceptor;
@@ -22,7 +22,7 @@ import java.util.function.BiFunction;
 @RequiredArgsConstructor
 public class CardCommandInterceptor implements MessageDispatchInterceptor<CommandMessage<?>> {
 
-    private final CardsRepository cardsRepository;
+    private final CardRepository cardRepository;
 
     @Nonnull
     @Override
@@ -30,7 +30,7 @@ public class CardCommandInterceptor implements MessageDispatchInterceptor<Comman
         return (index, command) -> {
             if (CreateCardCommand.class.equals(command.getPayloadType())) {
                 CreateCardCommand createCardCommand = (CreateCardCommand) command.getPayload();
-                Optional<CardEntity> optionalCards = cardsRepository.findByMobileNumberAndActiveSw(
+                Optional<CardEntity> optionalCards = cardRepository.findByMobileNumberAndActiveSw(
                         createCardCommand.getMobileNumber(), true);
                 if (optionalCards.isPresent()) {
                     throw new CardAlreadyExistsException("Card already created with given mobileNumber "
@@ -38,12 +38,12 @@ public class CardCommandInterceptor implements MessageDispatchInterceptor<Comman
                 }
             } else if (UpdateCardCommand.class.equals(command.getPayloadType())) {
                 UpdateCardCommand updateCardCommand = (UpdateCardCommand) command.getPayload();
-                CardEntity card = cardsRepository.findByMobileNumberAndActiveSw
+                CardEntity card = cardRepository.findByMobileNumberAndActiveSw
                         (updateCardCommand.getMobileNumber(), true).orElseThrow(() ->
                         new ResourceNotFoundException("Card", "mobileNumber", updateCardCommand.getMobileNumber()));
             } else if (DeleteCardCommand.class.equals(command.getPayloadType())) {
                 DeleteCardCommand deleteCardCommand = (DeleteCardCommand) command.getPayload();
-                CardEntity card = cardsRepository.findByCardNumberAndActiveSw(deleteCardCommand.getCardNumber(),
+                CardEntity card = cardRepository.findByCardNumberAndActiveSw(deleteCardCommand.getCardNumber(),
                         CardsConstants.ACTIVE_SW).orElseThrow(() -> new ResourceNotFoundException("Card", "cardNumber",
                         deleteCardCommand.getCardNumber().toString()));
             }

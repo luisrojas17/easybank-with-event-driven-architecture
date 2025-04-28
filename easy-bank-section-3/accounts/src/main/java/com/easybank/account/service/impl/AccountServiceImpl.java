@@ -5,7 +5,7 @@ import com.easybank.account.dto.AccountDto;
 import com.easybank.account.entity.AccountEntity;
 import com.easybank.account.exception.AccountAlreadyExistsException;
 import com.easybank.account.exception.ResourceNotFoundException;
-import com.easybank.account.mapper.AccountsMapper;
+import com.easybank.account.mapper.AccountMapper;
 import com.easybank.account.repository.AccountRepository;
 import com.easybank.account.service.AccountService;
 import lombok.AllArgsConstructor;
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
         );
-        AccountDto accountDto = AccountsMapper.mapToDto(accountEntity, new AccountDto());
+        AccountDto accountDto = AccountMapper.mapToDto(accountEntity, new AccountDto());
 
         log.info("Account details for mobileNumber [{}] is [{}].",
                 mobileNumber, accountDto);
@@ -75,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
                         new ResourceNotFoundException("Account", "mobileNumber",
                                 accountDto.getMobileNumber()));
 
-        AccountsMapper.mapToEntity(accountDto, accountEntity);
+        AccountMapper.mapToEntity(accountDto, accountEntity);
         accountRepository.save(accountEntity);
 
         return true;
