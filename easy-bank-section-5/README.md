@@ -4,7 +4,7 @@ All of these Microservices were developed by Spring Boot Framework and implement
 
 1. Database per service
 2. API Composition
-3. SAGA 
+3. SAGA (Choreography)
 
 
 # Dependencies

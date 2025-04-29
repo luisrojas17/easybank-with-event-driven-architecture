@@ -1,5 +1,7 @@
 package com.easybank.customer.command.controller;
 
+import com.easybank.common.command.UpdateCustomerMobileNumberCommand;
+import com.easybank.common.dto.MobileNumberToUpdateDto;
 import com.easybank.customer.command.CreateCustomerCommand;
 import com.easybank.customer.command.DeleteCustomerCommand;
 import com.easybank.customer.command.UpdateCustomerCommand;
@@ -74,6 +76,28 @@ public class CustomerCommandController {
                 .build();
 
         commandGateway.sendAndWait(deleteCustomerCommand);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
+    }
+
+    @PatchMapping("/mobile-number")
+    public ResponseEntity<ResponseDto> updateMobileNumber(
+            @Valid @RequestBody MobileNumberToUpdateDto
+                    mobileNumberToUpdateDto) {
+
+        UpdateCustomerMobileNumberCommand updateCustomerMobileNumberCommand =
+                UpdateCustomerMobileNumberCommand.builder()
+                        .customerId(mobileNumberToUpdateDto.getCustomerId())
+                        .accountNumber(mobileNumberToUpdateDto.getAccountNumber())
+                        .cardNumber(mobileNumberToUpdateDto.getCardNumber())
+                        .loanNumber(mobileNumberToUpdateDto.getLoanNumber())
+                        .currentMobileNumber(mobileNumberToUpdateDto.getCurrentMobileNumber())
+                        .newMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber())
+                        .build();
+
+        // To send command to update mobile number
+        commandGateway.sendAndWait(updateCustomerMobileNumberCommand);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
