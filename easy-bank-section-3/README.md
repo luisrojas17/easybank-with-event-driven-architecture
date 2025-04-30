@@ -60,7 +60,7 @@ for the Axon Server. Add the following properties inside the file:
 
 ```
 server.port=8024
-axoniq.axonserver.name=EazyBank Axon Server
+axoniq.axonserver.name=EasyBank Axon Server
 axoniq.axonserver.hostname=localhost
 axoniq.axonserver.devmode.enabled=true
 ```
