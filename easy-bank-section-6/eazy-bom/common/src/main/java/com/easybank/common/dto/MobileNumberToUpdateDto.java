@@ -10,13 +10,10 @@ public class MobileNumberToUpdateDto {
     @NotEmpty(message = "Customer Id cannot be empty.")
     private String customerId;
 
-    @NotEmpty(message = "Account number cannot be empty.")
     private Long accountNumber;
 
-    @NotEmpty(message = "Card number cannot be empty.")
     private Long cardNumber;
 
-    @NotEmpty(message = "Loan number cannot be empty.")
     private Long loanNumber;
 
     @NotEmpty(message = "Current mobile number cannot be empty.")

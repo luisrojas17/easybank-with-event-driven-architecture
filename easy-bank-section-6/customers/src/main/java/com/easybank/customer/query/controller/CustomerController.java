@@ -29,6 +29,7 @@ public class CustomerController {
             @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                     String mobileNumber) {
 
+        //Point to point query
         FindCustomerQuery findCustomerQuery = new FindCustomerQuery(mobileNumber);
 
         // To publish query object

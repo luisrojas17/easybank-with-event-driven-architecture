@@ -1,5 +1,6 @@
 package com.easybank.customer.query.projection;
 
+import com.easybank.common.event.CustomerMobileNumberRollbackedEvent;
 import com.easybank.common.event.CustomerMobileNumberUpdatedEvent;
 import com.easybank.customer.command.event.CustomerCreatedEvent;
 import com.easybank.customer.command.event.CustomerDeletedEvent;
@@ -74,5 +75,18 @@ public class CustomerProjection {
                 customerMobileNumberUpdatedEvent.getCurrentMobileNumber(), customerMobileNumberUpdatedEvent.getNewMobileNumber());
 
         log.info("CustomerMobileNumberUpdatedEvent processed successfully.");
+    }
+
+    // To handle the event published by the aggregate (AccountAggregate) in order to make rollback
+    @EventHandler
+    public void on(CustomerMobileNumberRollbackedEvent customerMobileNumberRollbackedEvent) {
+
+        log.info("Processing CustomerMobileNumberRollbackedEvent.\n\t[{}]",
+                customerMobileNumberRollbackedEvent.getCustomerId());
+
+        customerService.updateMobileNumber(
+                customerMobileNumberRollbackedEvent.getNewMobileNumber(), customerMobileNumberRollbackedEvent.getCurrentMobileNumber());
+
+        log.info("CustomerMobileNumberRollbackedEvent processed successfully.");
     }
 }

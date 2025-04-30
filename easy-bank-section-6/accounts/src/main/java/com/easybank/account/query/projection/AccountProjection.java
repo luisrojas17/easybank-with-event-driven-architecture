@@ -5,6 +5,8 @@ import com.easybank.account.command.event.AccountDeletedEvent;
 import com.easybank.account.command.event.AccountUpdatedEvent;
 import com.easybank.account.dto.AccountDto;
 import com.easybank.account.service.AccountService;
+import com.easybank.common.event.AccountMobileNumberRollbackedEvent;
+import com.easybank.common.event.AccountMobileNumberUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.ProcessingGroup;
@@ -60,5 +62,30 @@ public class AccountProjection {
         boolean result = accountService.delete(accountDeletedEvent.getAccountNumber());
 
         log.info("AccountDeletedEvent processed successfully [{}].", result);
+    }
+
+    // To handle the event published by the aggregate (AccountAggregate) in order to update mobile number
+    @EventHandler
+    public void handler(AccountMobileNumberUpdatedEvent accountMobileNumberUpdatedEvent) {
+
+        log.info("Processing AccountMobileNumberUpdatedEvent.\n\t[{}]",
+                accountMobileNumberUpdatedEvent.getCustomerId());
+
+        accountService.updateMobileNumber(
+                accountMobileNumberUpdatedEvent.getCurrentMobileNumber(), accountMobileNumberUpdatedEvent.getNewMobileNumber());
+
+        log.info("AccountMobileNumberUpdatedEvent processed successfully.");
+    }
+
+    // To handle the event published by the aggregate (AccountAggregate) in order to make rollback
+    @EventHandler
+    public void handler(AccountMobileNumberRollbackedEvent accountMobileNumberRollbackedEvent) {
+        log.info("Processing AccountMobileNumberRollbackedEvent.\n\t[{}]",
+                accountMobileNumberRollbackedEvent.getCustomerId());
+
+        accountService.updateMobileNumber(
+                accountMobileNumberRollbackedEvent.getNewMobileNumber(), accountMobileNumberRollbackedEvent.getCurrentMobileNumber());
+
+        log.info("AccountMobileNumberRollbackedEvent processed successfully.");
     }
 }

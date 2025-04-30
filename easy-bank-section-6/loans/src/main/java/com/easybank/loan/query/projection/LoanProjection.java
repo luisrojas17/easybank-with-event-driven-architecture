@@ -1,5 +1,6 @@
 package com.easybank.loan.query.projection;
 
+import com.easybank.common.event.LoanMobileNumberUpdatedEvent;
 import com.easybank.loan.command.event.LoanCreatedEvent;
 import com.easybank.loan.command.event.LoanDeletedEvent;
 import com.easybank.loan.command.event.LoanUpdatedEvent;
@@ -54,5 +55,18 @@ public class LoanProjection {
         boolean result = loanService.delete(loanDeletedEvent.getLoanNumber());
 
         log.info("LoanDeletedEvent processed successfully [{}].", result);
+    }
+
+    @EventHandler
+    public void handler(LoanMobileNumberUpdatedEvent loanMobileNumberUpdatedEvent) {
+
+        log.info("Processing LoanMobileNumberUpdatedEvent.\n\t[{}]",
+                loanMobileNumberUpdatedEvent.getLoanNumber());
+
+        loanService.updateMobileNumber(
+                loanMobileNumberUpdatedEvent.getCurrentMobileNumber(),
+                loanMobileNumberUpdatedEvent.getNewMobileNumber());
+
+        log.info("LoanMobileNumberUpdatedEvent processed successfully.");
     }
 }

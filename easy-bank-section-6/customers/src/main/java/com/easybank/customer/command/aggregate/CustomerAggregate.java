@@ -1,6 +1,8 @@
 package com.easybank.customer.command.aggregate;
 
+import com.easybank.common.command.RollbackCustomerMobileNumberCommand;
 import com.easybank.common.command.UpdateCustomerMobileNumberCommand;
+import com.easybank.common.event.CustomerMobileNumberRollbackedEvent;
 import com.easybank.common.event.CustomerMobileNumberUpdatedEvent;
 import com.easybank.customer.command.CreateCustomerCommand;
 import com.easybank.customer.command.DeleteCustomerCommand;
@@ -152,5 +154,30 @@ public class CustomerAggregate {
 
         // To set new value for mobile number which was updated
         this.mobileNumber = customerMobileNumberUpdatedEvent.getNewMobileNumber();
+    }
+
+    @CommandHandler
+    public void handler(RollbackCustomerMobileNumberCommand rollbackCustomerMobileNumberCommand) {
+
+        // To create an event
+        CustomerMobileNumberRollbackedEvent customerMobileNumberRollbackedEvent =
+                new CustomerMobileNumberRollbackedEvent();
+
+        // To copy all data properties
+        BeanUtils.copyProperties(rollbackCustomerMobileNumberCommand, customerMobileNumberRollbackedEvent);
+
+        // To publish new event which is handled by CustomerProjection.
+        // However, SagaManager orchestrates this event in order to continue with the flow in reverse order to complete
+        // the compensation transaction.
+        AggregateLifecycle.apply(customerMobileNumberRollbackedEvent);
+    }
+
+    @EventSourcingHandler
+    public void on(CustomerMobileNumberRollbackedEvent customerMobileNumberRollbackedEvent) {
+
+        // To set new values for mobile number and error message according to update
+        this.mobileNumber = customerMobileNumberRollbackedEvent.getCurrentMobileNumber();
+        this.errorMessage = customerMobileNumberRollbackedEvent.getErrorMessage();
+
     }
 }

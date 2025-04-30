@@ -5,6 +5,8 @@ import com.easybank.card.command.event.CardDeletedEvent;
 import com.easybank.card.command.event.CardUpdatedEvent;
 import com.easybank.card.dto.CardDto;
 import com.easybank.card.service.CardService;
+import com.easybank.common.event.CardMobileNumberRollbackedEvent;
+import com.easybank.common.event.CardMobileNumberUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.config.ProcessingGroup;
@@ -57,6 +59,34 @@ public class CardProjection {
         boolean result = cardService.delete(event.getCardNumber());
 
         log.info("CardDeletedEvent processed successfully [{}].", result);
+    }
+
+    @EventHandler
+    public void handler(CardMobileNumberUpdatedEvent cardMobileNumberUpdatedEvent) {
+
+        log.info("Processing CardMobileNumberUpdatedEvent.\n\t[{}]",
+                cardMobileNumberUpdatedEvent.getCardNumber());
+
+        cardService.updateMobileNumber(
+                cardMobileNumberUpdatedEvent.getCurrentMobileNumber(),
+                cardMobileNumberUpdatedEvent.getNewMobileNumber());
+
+        log.info("CardMobileNumberUpdatedEvent processed successfully.");
+
+    }
+
+    @EventHandler
+    public void handler(CardMobileNumberRollbackedEvent cardMobileNumberRollbackedEvent) {
+
+        log.info("Processing CardMobileNumberRollbackedEvent.\n\t[{}]",
+                cardMobileNumberRollbackedEvent.getCardNumber());
+
+        cardService.updateMobileNumber(
+                cardMobileNumberRollbackedEvent.getNewMobileNumber(),
+                cardMobileNumberRollbackedEvent.getCurrentMobileNumber());
+
+        log.info("CardMobileNumberRollbackedEvent processed successfully.");
+
     }
 
 }

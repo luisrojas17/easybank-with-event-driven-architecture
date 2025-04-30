@@ -8,16 +8,24 @@ import com.easybank.customer.command.UpdateCustomerCommand;
 import com.easybank.customer.constants.CustomerConstants;
 import com.easybank.customer.dto.CustomerDto;
 import com.easybank.customer.dto.ResponseDto;
+import com.easybank.customer.query.FindCustomerQuery;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.axonframework.commandhandling.CommandCallback;
+import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.commandhandling.CommandResultMessage;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +36,8 @@ public class CustomerCommandController {
 
     // To send commands to axon server
     private final CommandGateway commandGateway;
+
+    private final QueryGateway queryGateway;
 
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
@@ -96,11 +106,38 @@ public class CustomerCommandController {
                         .newMobileNumber(mobileNumberToUpdateDto.getNewMobileNumber())
                         .build();
 
-        // To send command to update mobile number
-        commandGateway.sendAndWait(updateCustomerMobileNumberCommand);
+        // Check: https://docs.axoniq.io/axon-framework-reference/4.11/queries/
+        // To subscribe to query and waiting for response until the process is completed.
+        try (SubscriptionQueryResult<ResponseDto, ResponseDto> queryResult =
+                     queryGateway.subscriptionQuery(
+                             new FindCustomerQuery(updateCustomerMobileNumberCommand.getNewMobileNumber()),
+                             ResponseTypes.instanceOf(ResponseDto.class),
+                             ResponseTypes.instanceOf(ResponseDto.class))) {
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
+            // To send command to update mobile number
+            commandGateway.send(updateCustomerMobileNumberCommand, new CommandCallback<>() {
+
+                // If there is an exception in aggregate class, then it will be return an error message
+                @Override
+                public void onResult(
+                        @Nonnull CommandMessage<? extends UpdateCustomerMobileNumberCommand> commandMessage,
+                                     @Nonnull CommandResultMessage<?> commandResultMessage) {
+
+                    if (commandResultMessage.isExceptional()) {
+
+                        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(new ResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.name(),
+                                        commandResultMessage.exceptionResult().getMessage()));
+
+                    }
+
+                }
+            });
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(queryResult.updates().blockFirst());
+        }
+
     }
 
 }

@@ -1,11 +1,14 @@
 package com.easybank.loan.command.aggregate;
 
+import com.easybank.common.command.UpdateLoanMobileNumberCommand;
+import com.easybank.common.event.LoanMobileNumberUpdatedEvent;
 import com.easybank.loan.command.CreateLoanCommand;
 import com.easybank.loan.command.DeleteLoanCommand;
 import com.easybank.loan.command.UpdateLoanCommand;
 import com.easybank.loan.command.event.LoanCreatedEvent;
 import com.easybank.loan.command.event.LoanDeletedEvent;
 import com.easybank.loan.command.event.LoanUpdatedEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -13,6 +16,7 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
+@Slf4j
 @Aggregate
 public class LoanAggregate {
 
@@ -74,6 +78,34 @@ public class LoanAggregate {
     @EventSourcingHandler
     public void on(LoanDeletedEvent loanDeletedEvent) {
         this.activeSw = loanDeletedEvent.isActiveSw();
+    }
+
+    @CommandHandler
+    public void handler(UpdateLoanMobileNumberCommand updateLoanMobileNumberCommand) {
+
+        log.info("Processing UpdateLoanMobileNumberCommand.\n\t[{}]",
+                updateLoanMobileNumberCommand);
+
+        // To create an event
+        LoanMobileNumberUpdatedEvent loanMobileNumberUpdatedEvent =
+                new LoanMobileNumberUpdatedEvent();
+
+        // To copy all data properties
+        BeanUtils.copyProperties(updateLoanMobileNumberCommand, loanMobileNumberUpdatedEvent);
+
+        // To publish new event which is handled by LoanProjection.
+        // However, SagaManager orchestrates this event in order to continue with the flow in reverse order to complete
+        // the compensation transaction.
+        AggregateLifecycle.apply(loanMobileNumberUpdatedEvent);
+
+        //throw new RuntimeException("Loan mobile number update failed.");
+
+        log.info("UpdateLoanMobileNumberCommand processed successfully.");
+    }
+
+    @EventSourcingHandler
+    public void on(LoanMobileNumberUpdatedEvent loanMobileNumberUpdatedEvent) {
+        this.mobileNumber = loanMobileNumberUpdatedEvent.getNewMobileNumber();
     }
 
 }
